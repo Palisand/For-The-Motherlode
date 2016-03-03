@@ -29,10 +29,14 @@
 acceleration = 0.1;
 mass = 10;
 strafe_dir_time = 0;
-stabbing = false;
+
 can_stab = true;
 stab_time = 0;
 has_stabbed = false;
+drawn_blood = true;
+
+x_stab = x + lengthdir_x(20, image_angle);
+y_stab = y + lengthdir_y(20, image_angle);
 
 torso_y_scale = 1;
 walk_wave_t = 0;
@@ -202,14 +206,14 @@ else {
             <kind>1</kind>
             <string>/// Stab Specific
 
-var x_source = x + lengthdir_x(10, image_angle);
-var y_source = y + lengthdir_y(10, image_angle);
+x_stab = x + lengthdir_x(20, image_angle);
+y_stab = y + lengthdir_y(20, image_angle);
 
-// sometimes misses?!?!?!
-if (!has_stabbed &amp;&amp; collision_point(x_source, y_source, o_player, true, false)) {
-    blood_hit(x_source, y_source, 20, stab_p_emitter, stab_p_type);
+if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, false)) {
+    blood_hit(x_stab, y_stab, 20, stab_p_emitter, stab_p_type);
     shake_screen(10, 10);
-    has_stabbed = true;    
+    has_stabbed = true;
+    drawn_blood = false;
 }
 </string>
           </argument>
@@ -261,7 +265,9 @@ if (!has_stabbed &amp;&amp; collision_point(x_source, y_source, o_player, true, 
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// Feet
+            <string>///Body
+
+// Feet
 draw_sprite_ext(
     s_plr_feet, s_plr_feet_image_index, x, y, 
     s_plr_feet_image_xscale, 1, direction, c_white, 1
@@ -288,6 +294,32 @@ draw_sprite_shadow_ext(
     270, 3, 1, c_black, 0.5,
 );
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Blood
+
+if (!drawn_blood) {
+    draw_blood(x + lengthdir_x(10, image_angle), y + lengthdir_y(10, image_angle));
+    drawn_blood = true;
+}
 </string>
           </argument>
         </arguments>

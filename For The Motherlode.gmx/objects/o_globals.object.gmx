@@ -25,6 +25,33 @@
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>/// General
+
+global.p_sys = part_system_create();
+global.surf = surface_create(room_width, room_height);
+// REMEMBER TO DESTROY!
+
+global.barrier_radius = room_width/2 - 100;
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>/// Item IDs &amp; Attributes
 
 enum item {
@@ -158,32 +185,6 @@ arr_smg[weapon.sprite_frame_index] = 2;
 arr_smg[weapon.muzzle_offset] = 20;
 global.items[item.smg] = arr_smg;
 // LMG
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Surface &amp; Particle System
-
-global.p_sys = part_system_create();
-global.surf = surface_create(room_width, room_height);
-
-// REMEMBER TO DESTROY!
 </string>
           </argument>
         </arguments>

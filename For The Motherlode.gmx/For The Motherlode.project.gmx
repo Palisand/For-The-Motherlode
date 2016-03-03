@@ -42,6 +42,7 @@
       <sprite>sprites\s_giblets</sprite>
       <sprite>sprites\s_blood_spew</sprite>
       <sprite>sprites\s_blood_smear_ne</sprite>
+      <sprite>sprites\s_blood_decal</sprite>
       <sprite>sprites\s_footprints_bloody</sprite>
       <sprite>sprites\s_footsteps</sprite>
       <sprite>sprites\s_footprints</sprite>
@@ -118,26 +119,28 @@
       <script>scripts\muzzle_flash.gml</script>
       <script>scripts\blood_hit.gml</script>
       <script>scripts\shake_screen.gml</script>
+      <script>scripts\draw_blood.gml</script>
     </scripts>
   </scripts>
+  <shaders name="shaders">
+    <shader type="GLSLES">shaders\sh_alpha_pre_multiplyer.shader</shader>
+  </shaders>
   <objects name="objects">
-    <object>objects\o_globals</object>
-    <object>objects\o_player</object>
-    <object>objects\o_crosshair</object>
     <object>objects\o_handler</object>
+    <object>objects\o_globals</object>
+    <object>objects\o_crosshair</object>
     <object>objects\o_camera</object>
+    <object>objects\o_player</object>
     <object>objects\o_motherlode</object>
-    <object>objects\o_bullet</object>
-    <object>objects\obj_trail1</object>
-    <object>objects\obj_trail_ext1</object>
-    <object>objects\obj_trail2</object>
-    <object>objects\obj_trail_ext2</object>
-    <object>objects\obj_spawner</object>
     <object>objects\o_crate</object>
     <object>objects\o_collider</object>
     <objects name="Enemies">
       <object>objects\o_shooter</object>
       <object>objects\o_stabber</object>
+    </objects>
+    <objects name="Projectiles">
+      <object>objects\o_bullet</object>
+      <object>objects\o_bullet_shadow</object>
     </objects>
   </objects>
   <rooms name="rooms">

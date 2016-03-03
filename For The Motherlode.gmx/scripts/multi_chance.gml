@@ -29,7 +29,7 @@ if (count == 1) //if there's 1 argument left, that is the default value
 //Default the final value to the default value (which is 0 if there's no default value)
 var final_value = default_value;
 //Get a random value
-//var rand = random(100);
+var rand = random(100);
 var current = 0;
 //Loop through the values, checking if the random value satisfies that value
 for (var i = 0; i < total; i++)
