@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>999</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,18 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>randomize();
-
-instance_create(0, 0, o_globals);
-instance_create(0, 0, o_player);
-instance_create(mouse_x, mouse_y, o_crosshair);
-instance_create(0, 0, o_camera);
-instance_create(room_width/2, room_height/2, o_motherlode);
-
-//instance_create(100, room_height/2, o_enemy);
-
-repeat(100)
-    instance_create(random(room_width), random(room_height), o_stabber);
+            <string>image_speed = 0;
+rotate_speed = choose(-10, 10);
 </string>
           </argument>
         </arguments>
@@ -59,18 +49,11 @@ repeat(100)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// End, Restart, Fullscreen
+            <string>image_angle += rotate_speed;
 
-if (keyboard_check_pressed(vk_escape)) {
-    game_end();
-}
-
-if (keyboard_check_pressed(ord("R"))) {
-    game_restart();
-}
-
-if (keyboard_check_pressed(ord("F"))) {
-    window_set_fullscreen(!window_get_fullscreen());
+speed--;
+if (abs(rotate_speed) &gt; 0) {
+    rotate_speed += sign(rotate_speed) * 1;
 }
 </string>
           </argument>
@@ -94,60 +77,16 @@ if (keyboard_check_pressed(ord("F"))) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Surface
-draw_surface(global.surf, 0, 0);
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Grid
-
-/*
-for (var i = 0; i &lt; room_width; i += room_width / 10) {
-    draw_line(i, 0, i, room_height);
-    draw_line(0, i, room_width, i);
+            <string>if (speed &gt; 0) {
+    draw_blood(x, y);
+    draw_self();
 }
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Barrier
-
-/*
-draw_set_circle_precision(64);
-draw_circle(room_width/2, room_height/2, global.barrier_radius, true);
+else {
+    surface_set_target(global.surf);
+    draw_self();
+    surface_reset_target();
+    instance_destroy();
+}
 </string>
           </argument>
         </arguments>

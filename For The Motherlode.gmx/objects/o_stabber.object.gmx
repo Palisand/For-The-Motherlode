@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>0</persistent>
-  <parentName>o_collider</parentName>
+  <parentName>o_enemy</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -25,28 +25,43 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>move_speed = random_range(2, 4);
+            <string>// Health
+max_health = 20;// * wave_level_multiplier
+hhealth = max_health;
+total_health = (hhealth / max_health) * 100;
+
+// Movement
+move_speed = random_range(2, 4);
 acceleration = 0.1;
 mass = 10;
 strafe_dir_time = 0;
 
+// Stab stuff
 can_stab = true;
 stab_time = 0;
 has_stabbed = false;
-drawn_blood = true;
-
 x_stab = x + lengthdir_x(20, image_angle);
 y_stab = y + lengthdir_y(20, image_angle);
+stab_p_emitter = part_emitter_create(global.p_sys);
+stab_p_type = part_type_create();
 
+// Sprite stuff
 torso_y_scale = 1;
 walk_wave_t = 0;
 walk_wave_inc = 10;
-s_plr_feet_image_index = 0;
-s_plr_feet_image_xscale = 1;
+s_feet_image_index = 0;
+s_feet_image_xscale = 1;
 sprite_index = s_mask_human;
 
-stab_p_emitter = part_emitter_create(global.p_sys);
-stab_p_type = part_type_create();
+// Blood
+drawn_blood = true;
+blood_p_emitter = part_emitter_create(global.p_sys);
+blood_p_type = part_type_create();
+
+// Other
+dmg_pushback = 0;
+gib_threshold = 10;
+
 </string>
           </argument>
         </arguments>
@@ -71,8 +86,36 @@ stab_p_type = part_type_create();
             <kind>1</kind>
             <string>/// Cleanup
 
-part_emitter_destroy(global.ps_sys, stab_p_emitter);
+part_emitter_destroy(global.p_sys, stab_p_emitter);
 part_type_destroy(stab_p_type);
+
+part_emitter_destroy(global.p_sys, blood_p_emitter);
+part_type_destroy(blood_p_type);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="11">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Destroy
+
+instance_destroy();
 </string>
           </argument>
         </arguments>
@@ -157,18 +200,18 @@ if (stab_time &gt; 0) {
 }
 
 // Feet
-var amplitude = sprite_get_number(s_plr_feet) - 0.9;
+var amplitude = sprite_get_number(s_feet) - 0.9;
 var wave_val = amplitude * sin(degtorad(walk_wave_t));
-s_plr_feet_image_index = abs(wave_val);
+s_feet_image_index = abs(wave_val);
 if (wave_val &lt; 0) {
-    s_plr_feet_image_xscale = -1;
+    s_feet_image_xscale = -1;
 }
 else {
-    s_plr_feet_image_xscale = 1;
+    s_feet_image_xscale = 1;
 }
 
 if (speed) {
-    walk_wave_t += walk_wave_inc; 
+    walk_wave_t += walk_wave_inc/4 * speed; 
 }
 else {
     if (abs(wave_val) &gt; 0.1) {
@@ -219,6 +262,51 @@ if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, fals
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Health &amp; Death
+
+total_health = (hhealth / max_health) * 100;
+
+if (total_health &lt;= 0) {
+    var num_giblets = sprite_get_number(s_stab_gibs_1);
+    var gib_sprite = s_stab_gibs_1;
+    if (dmg_pushback &gt;= gib_threshold) {
+        num_giblets = sprite_get_number(s_stab_gibs_2);
+        gib_sprite = s_stab_gibs_2;
+    }
+    for (var i = 0; i &lt; num_giblets; i++) {
+        with (instance_create(x, y, o_giblet)) {
+            sprite_index = gib_sprite;
+            image_index = i;
+            speed = other.dmg_pushback + random_range(-3, 3);
+            image_angle = other.image_angle;
+            direction = image_angle - 180 + random_range(-45, 45);
+            // Explode from center: (360 / num_giblets) * (i + 1);
+        }
+    }
+    instance_deactivate_object(self);
+    // Set destruction alarm (1 second)
+    alarm[11] = room_speed;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="4" ename="o_collider">
       <action>
@@ -239,10 +327,8 @@ if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, fals
             <kind>1</kind>
             <string>///Collisions
 
-//if (speed &gt; 0) {
-    x += 0.04 * (x - (other.x));
-    y += 0.04 * (y - (other.y));
-//}
+x += 0.04 * (x - (other.x));
+y += 0.04 * (y - (other.y));
 </string>
           </argument>
         </arguments>
@@ -269,8 +355,8 @@ if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, fals
 
 // Feet
 draw_sprite_ext(
-    s_plr_feet, s_plr_feet_image_index, x, y, 
-    s_plr_feet_image_xscale, 1, direction, c_white, 1
+    s_feet, s_feet_image_index, x, y, 
+    s_feet_image_xscale, 1, direction, c_white, 1
 );
 // Torso
 var torso_image_index;
@@ -282,7 +368,7 @@ else {
 }
 draw_sprite_shadow_ext(
     s_stab_torso, torso_image_index, x, y, image_angle,
-    270, 5, 1, c_black, 0.5
+    270, 5, 1, torso_y_scale, c_black, 0.5
 );
 draw_sprite_ext(
     s_stab_torso, torso_image_index, x, y, 
@@ -291,7 +377,7 @@ draw_sprite_ext(
 // Head
 draw_sprite_shadow_ext(
     s_plr_head, 0, x, y, image_angle,
-    270, 3, 1, c_black, 0.5,
+    270, 3, 1, 1, c_black, 0.5,
 );
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
 </string>
@@ -314,12 +400,39 @@ draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Blood
+            <string>/// Blood (on stab)
 
 if (!drawn_blood) {
     draw_blood(x + lengthdir_x(10, image_angle), y + lengthdir_y(10, image_angle));
     drawn_blood = true;
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Health
+
+var healthy_green = make_colour_hsv(90, 255, 160);// global
+draw_healthbar(
+    x - 10, y - 20, x + 10, y - 18,
+    total_health, c_gray, c_red, healthy_green, 0, true, false
+);
 </string>
           </argument>
         </arguments>

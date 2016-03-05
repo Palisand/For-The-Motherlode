@@ -5,10 +5,10 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>0</persistent>
-  <parentName>&lt;undefined&gt;</parentName>
+  <parentName>o_collider</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
-    <event eventtype="8" enumb="0">
+    <event eventtype="0" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -25,9 +25,12 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Trail
+            <string>sprite_index = s_mask_human;
+blood_p_emitter = part_emitter_create(global.p_sys);
+blood_p_type = part_type_create();
 
-draw_trail(10, 2, c_black, -1, true, 0.1);
+hhealth = 99999999;
+
 </string>
           </argument>
         </arguments>

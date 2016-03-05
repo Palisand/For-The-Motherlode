@@ -29,7 +29,6 @@
 
 global.p_sys = part_system_create();
 global.surf = surface_create(room_width, room_height);
-// REMEMBER TO DESTROY!
 
 global.barrier_radius = room_width/2 - 100;
 </string>

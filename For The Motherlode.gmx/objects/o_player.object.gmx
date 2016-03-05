@@ -34,7 +34,7 @@ acceleration = 0.1;
 move_speed = 5;
 
 can_shoot = true;
-shoot_delay = 5;
+shoot_delay = 6;
 
 muzzle_flash_p_emitter = part_emitter_create(global.p_sys);
 muzzle_flash_p_type = part_type_create();
@@ -48,11 +48,11 @@ key_reload = vk_space;
 mb_shoot = mb_left;
 
 // Sprite (Body)
-s_plr_torso_current = s_plr_torso;
+s_torso_current = s_plr_torso;
 walk_wave_t = 0;
 walk_wave_inc = 10;
-s_plr_feet_image_index = 0;
-s_plr_feet_image_xscale = 1;
+s_feet_image_index = 0;
+s_feet_image_xscale = 1;
 
 // Weapon
 base_dist_1h = 17;// pixel distance from torso sprite center to weapon sprite center
@@ -142,8 +142,8 @@ var spread = 5;
 if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
     with(
         instance_create(
-            x + lengthdir_x(sprite_get_width(s_plr_torso_current)/2, image_angle),
-            y + lengthdir_y(sprite_get_height(s_plr_torso_current)/2, image_angle),
+            x + lengthdir_x(sprite_get_width(s_torso_current)/2, image_angle),
+            y + lengthdir_y(sprite_get_height(s_torso_current)/2, image_angle),
             o_bullet
         )
     ) {
@@ -151,7 +151,20 @@ if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
         direction = other.image_angle + random_range(-spread/2, spread/2);
     }
     
-    // USE PARTICLES FOR BULLET TRACERS AS WELL?
+    with (
+        instance_create(
+            x + lengthdir_x(sprite_get_width(s_torso_current)/2, image_angle),
+            y + lengthdir_y(sprite_get_height(s_torso_current)/2, image_angle),
+            o_casing
+        )
+    ) {
+        image_angle = other.image_angle;
+        direction = other.image_angle - 90 + random_range(-45, 45);
+        speed = random_range(3, 5);
+        image_index = 0;
+    }
+    
+    // Use particles for bullet tracers? Probably only for large projectiles...
     
     muzzle_flash(
         x + lengthdir_x(w_current[weapon.muzzle_offset], image_angle),
@@ -230,14 +243,14 @@ else if (!move_right &amp;&amp; !move_left) {
 }
 
 // Handle feet sprite (make into script, get_src_vars())
-var amplitude = sprite_get_number(s_plr_feet) - 0.9;
+var amplitude = sprite_get_number(s_feet) - 0.9;
 var wave_val = amplitude * sin(degtorad(walk_wave_t));
-s_plr_feet_image_index = abs(wave_val);
+s_feet_image_index = abs(wave_val);
 if (wave_val &lt; 0) {
-    s_plr_feet_image_xscale = -1;
+    s_feet_image_xscale = -1;
 }
 else {
-    s_plr_feet_image_xscale = 1;
+    s_feet_image_xscale = 1;
 }
 
 if (move_up || move_down || move_left || move_right) {
@@ -387,13 +400,13 @@ while (place_meeting(x, y, other)) {
 
 // Feet
 draw_sprite_ext(
-    s_plr_feet, s_plr_feet_image_index, x, y, 
-    s_plr_feet_image_xscale, 1, direction, c_white, 1
+    s_feet, s_feet_image_index, x, y, 
+    s_feet_image_xscale, 1, direction, c_white, 1
 );
 // Torso (shadow)
 draw_sprite_shadow_ext(
-    s_plr_torso_current, 0, x, y, image_angle,
-    270, 5, 1, c_black, 0.5
+    s_torso_current, 0, x, y, image_angle,
+    270, 5, 1, 1, c_black, 0.5
 );
 // Weapon (shadow)
 draw_sprite_shadow_ext(
@@ -401,14 +414,14 @@ draw_sprite_shadow_ext(
     x + lengthdir_x(base_dist_1h, image_angle), 
     y + lengthdir_y(base_dist_1h, image_angle),
     image_angle,
-    270, 5, 1, c_black, 0.5
+    270, 5, 1, 1, c_black, 0.5
 );
 // Torso (sprite)
-draw_sprite_ext(s_plr_torso_current, 0, x, y, 1, 1, image_angle, c_white, 1);
+draw_sprite_ext(s_torso_current, 0, x, y, 1, 1, image_angle, c_white, 1);
 // Head
 draw_sprite_shadow_ext(
     s_plr_head, 0, x, y, image_angle,
-    270, 3, 1, c_black, 0.5,
+    270, 3, 1, 1, c_black, 0.5,
 );
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
 // Weapon (sprite)
@@ -418,16 +431,67 @@ draw_sprite_ext(
     y + lengthdir_y(base_dist_1h, image_angle),
     1, 1, image_angle, c_white, 1,
 );
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Line Of Sight
 
-// Line Of Sight
+var max_len = 200;
+var min_len = 100;
+var len = point_distance(x, y, o_crosshair.x, o_crosshair.y) * max_len / (room_width/4);
+if (len &lt; min_len) {
+    len = min_len;
+}
+if (len &gt; max_len) {
+    len = max_len;
+}
+
 draw_set_colour(c_white);
 draw_line(
-    x + lengthdir_x(100, image_angle),
-    y + lengthdir_y(100, image_angle),
-    x + lengthdir_x(200, image_angle), 
-    y + lengthdir_y(200, image_angle)
+    x + lengthdir_x(50, image_angle),
+    y + lengthdir_y(50, image_angle),
+    x + lengthdir_x(len, image_angle), 
+    y + lengthdir_y(len, image_angle)
 );
 
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>draw_text(x, y + 30, instance_count);
 </string>
           </argument>
         </arguments>

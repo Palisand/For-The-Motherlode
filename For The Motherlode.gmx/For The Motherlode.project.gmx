@@ -29,10 +29,15 @@
   </NewExtensions>
   <sounds name="sound"/>
   <sprites name="sprites">
-    <sprites name="Player">
+    <sprites name="Human">
+      <sprite>sprites\s_mask_human</sprite>
       <sprite>sprites\s_plr_torso</sprite>
       <sprite>sprites\s_plr_head</sprite>
-      <sprite>sprites\s_plr_feet</sprite>
+      <sprite>sprites\s_feet_disconnected</sprite>
+      <sprite>sprites\s_feet</sprite>
+      <sprite>sprites\s_stab_torso</sprite>
+      <sprite>sprites\s_stab_gibs_1</sprite>
+      <sprite>sprites\s_stab_gibs_2</sprite>
     </sprites>
     <sprites name="Weapons">
       <sprite>sprites\s_w_primary</sprite>
@@ -42,9 +47,7 @@
       <sprite>sprites\s_giblets</sprite>
       <sprite>sprites\s_blood_spew</sprite>
       <sprite>sprites\s_blood_smear_ne</sprite>
-      <sprite>sprites\s_blood_decal</sprite>
       <sprite>sprites\s_footprints_bloody</sprite>
-      <sprite>sprites\s_footsteps</sprite>
       <sprite>sprites\s_footprints</sprite>
       <sprite>sprites\s_footsteps_bloody</sprite>
       <sprite>sprites\s_plr_melee</sprite>
@@ -54,6 +57,7 @@
       <sprite>sprites\s_plr_swing</sprite>
       <sprite>sprites\s_plr_throw</sprite>
       <sprite>sprites\s_zmb_walk</sprite>
+      <sprite>sprites\s_stab</sprite>
     </sprites>
     <sprites name="Structures?">
       <sprite>sprites\s_boulder</sprite>
@@ -61,10 +65,14 @@
       <sprite>sprites\s_sand_bags</sprite>
       <sprite>sprites\o_propane</sprite>
     </sprites>
-    <sprite>sprites\spr_zigzag</sprite>
-    <sprite>sprites\s_mask_human</sprite>
-    <sprite>sprites\s_stab</sprite>
-    <sprite>sprites\s_stab_torso</sprite>
+    <sprites name="Projectiles">
+      <sprite>sprites\s_bullet</sprite>
+    </sprites>
+    <sprites name="FX">
+      <sprite>sprites\s_footsteps</sprite>
+      <sprite>sprites\s_casing</sprite>
+      <sprite>sprites\s_blood_decal</sprite>
+    </sprites>
   </sprites>
   <backgrounds name="background"/>
   <paths name="paths"/>
@@ -135,6 +143,7 @@
     <object>objects\o_crate</object>
     <object>objects\o_collider</object>
     <objects name="Enemies">
+      <object>objects\o_enemy</object>
       <object>objects\o_shooter</object>
       <object>objects\o_stabber</object>
     </objects>
@@ -142,6 +151,8 @@
       <object>objects\o_bullet</object>
       <object>objects\o_bullet_shadow</object>
     </objects>
+    <object>objects\o_casing</object>
+    <object>objects\o_giblet</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
