@@ -60,9 +60,9 @@ base_dist_2h = 0;
 
 w_index = 0;
 w_inventory = ds_list_create();
-ds_list_add(w_inventory, item.pistol);
-ds_list_add(w_inventory, item.revolver);
-ds_list_add(w_inventory, item.smg);
+ds_list_add(w_inventory, ITEM.pistol);
+ds_list_add(w_inventory, ITEM.revolver);
+ds_list_add(w_inventory, ITEM.smg);
 w_current = global.items[ds_list_find_value(w_inventory, w_index)];
 </string>
           </argument>
@@ -147,8 +147,9 @@ if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
             o_bullet
         )
     ) {
-        speed = 50;
-        direction = other.image_angle + random_range(-spread/2, spread/2);
+        speed = 50;  // WPN.proj_speed (missiles have acceleration though)
+        direction = other.image_angle + random_range(-spread/2, spread/2); // WPN.spread
+        // damage = wpn_current[WPN.damage];
     }
     
     with (
@@ -161,14 +162,12 @@ if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
         image_angle = other.image_angle;
         direction = other.image_angle - 90 + random_range(-45, 45);
         speed = random_range(3, 5);
-        image_index = 0;
+        image_index = 0;  // ammo_type?
     }
     
-    // Use particles for bullet tracers? Probably only for large projectiles...
-    
     muzzle_flash(
-        x + lengthdir_x(w_current[weapon.muzzle_offset], image_angle),
-        y + lengthdir_y(w_current[weapon.muzzle_offset], image_angle),
+        x + lengthdir_x(w_current[WPN.muzzle_offset] + base_dist_1h, image_angle),
+        y + lengthdir_y(w_current[WPN.muzzle_offset] + base_dist_1h, image_angle),
         4, 0, 32, image_angle, muzzle_flash_p_emitter, muzzle_flash_p_type
     );
 
@@ -291,13 +290,22 @@ else {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Barrier Collision
+            <string>/// Barrier &amp; Motherlode Collision
 
+// Barrier
 var dist = point_distance(x, y, o_motherlode.x, o_motherlode.y);
 var dir = point_direction(x, y, o_motherlode.x, o_motherlode.y);
 var diff = dist - global.barrier_radius;
 
 if (diff &gt; 0) {
+    x += lengthdir_x(diff, dir);
+    y += lengthdir_y(diff, dir);
+}
+
+// Motherlode
+diff = dist - o_motherlode.radius;
+
+if (diff &lt; 0) {
     x += lengthdir_x(diff, dir);
     y += lengthdir_y(diff, dir);
 }
@@ -410,7 +418,7 @@ draw_sprite_shadow_ext(
 );
 // Weapon (shadow)
 draw_sprite_shadow_ext(
-    s_w_primary, w_current[weapon.sprite_frame_index],
+    s_w_primary, w_current[WPN.sprite_frame_index],
     x + lengthdir_x(base_dist_1h, image_angle), 
     y + lengthdir_y(base_dist_1h, image_angle),
     image_angle,
@@ -426,7 +434,7 @@ draw_sprite_shadow_ext(
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
 // Weapon (sprite)
 draw_sprite_ext(
-    s_w_primary, w_current[weapon.sprite_frame_index], 
+    s_w_primary, w_current[WPN.sprite_frame_index], 
     x + lengthdir_x(base_dist_1h, image_angle), 
     y + lengthdir_y(base_dist_1h, image_angle),
     1, 1, image_angle, c_white, 1,

@@ -55,8 +55,7 @@ sprite_index = s_mask_human;
 
 // Blood
 drawn_blood = true;
-blood_p_emitter = part_emitter_create(global.p_sys);
-blood_p_type = part_type_create();
+blood_emitter = instance_create(x, y, o_particle_emitter);
 
 // Other
 dmg_pushback = 0;
@@ -88,34 +87,6 @@ gib_threshold = 10;
 
 part_emitter_destroy(global.p_sys, stab_p_emitter);
 part_type_destroy(stab_p_type);
-
-part_emitter_destroy(global.p_sys, blood_p_emitter);
-part_type_destroy(blood_p_type);
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="2" enumb="11">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Destroy
-
-instance_destroy();
 </string>
           </argument>
         </arguments>
@@ -141,6 +112,32 @@ instance_destroy();
             <string>/// can_stab = true;
 
 can_stab = true;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Blood emitter position
+
+blood_emitter.x = x;
+blood_emitter.y = y;
 </string>
           </argument>
         </arguments>
@@ -299,9 +296,9 @@ if (total_health &lt;= 0) {
             // Explode from center: (360 / num_giblets) * (i + 1);
         }
     }
-    instance_deactivate_object(self);
-    // Set destruction alarm (1 second)
-    alarm[11] = room_speed;
+    // Set alarm for particle emitter / type destruction (1 second)
+    blood_emitter.alarm[0] = room_speed;
+    instance_destroy();
 }
 </string>
           </argument>

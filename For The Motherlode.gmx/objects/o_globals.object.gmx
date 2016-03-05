@@ -53,23 +53,31 @@ global.barrier_radius = room_width/2 - 100;
             <kind>1</kind>
             <string>/// Item IDs &amp; Attributes
 
-enum item {
+enum ITEM {
     // Weapons
     pistol,
     revolver,
-    smg
+    smg,
+    lmg,
+    pump_shotgun,
+    s_o_shotgun,
+    auto_shotgun,
+    rifle,
+    assault_rifle,
+    grenade_launcher,
+    missile_launcher
 };
 
-enum item_attr {
+enum ITEM_ATTR {
     type,
     enum_size
 };
 
-enum item_type {
+enum ITEM_TYPE {
     weapon,
     useable,  // drugs, bandages, etc.
     trap,  // includes mines, turrets, etc.
-    craft
+    craft  // scrap metal, adhesive, etc.
 };
 </string>
           </argument>
@@ -93,31 +101,33 @@ enum item_type {
             <kind>1</kind>
             <string>/// Weapon Attributes
 
-enum weapon {
-    name = 1, // item_attr.enum_size,
+enum WPN {
+    name = 1, // ITEM_ATTR.enum_size,
     action,
     carry,
     damage,
     range,
     spread,
-    ammo_capacity,
+    proj_speed,
     ammo_type,
     sprite_frame_index,
-    muzzle_offset  // pixel distance from sprite center to weapon muzzle
+    muzzle_offset,  // pixel distance from sprite center to weapon muzzle
+    // casing?
+    // push_back?
 }
 
-enum weapon_carry {
+enum WPN_CARRY {
     one_handed,
     two_handed
 }
 
-enum weapon_action {
-    semi_auto,
+enum WPN_ACTION {
+    semi_auto, // as fast as you click (no shoot delay)
     automatic,
-    single_shot
+    single_shot // shoot delay
 }
 
-enum weapon_ammo_type {
+enum WPN_AMMO {
     small_round,
     shell,
     missile
@@ -145,45 +155,31 @@ enum weapon_ammo_type {
             <string>/// Weapons
 
 // Pistol
-arr_pistol[item_attr.type] = item_type.weapon;
-arr_pistol[weapon.name] = "Pathetic Pistol";
-arr_pistol[weapon.action] = weapon_action.semi_auto;
-arr_pistol[weapon.carry] = weapon_carry.one_handed;
-arr_pistol[weapon.damage] = 6;
-arr_pistol[weapon.range] = 500;
-arr_pistol[weapon.spread] = 10;
-arr_pistol[weapon.ammo_capacity] = 12;
-arr_pistol[weapon.ammo_type] = weapon_ammo_type.small_round;
-arr_pistol[weapon.sprite_frame_index] = 0;
-arr_pistol[weapon.muzzle_offset] = 8;
-global.items[item.pistol] = arr_pistol;
+arr_pistol[ITEM_ATTR.type] = ITEM_TYPE.weapon;
+arr_pistol[WPN.name] = "Pathetic Pistol";
+arr_pistol[WPN.action] = WPN_ACTION.semi_auto;
+arr_pistol[WPN.carry] = WPN_CARRY.one_handed;
+arr_pistol[WPN.damage] = 6;
+arr_pistol[WPN.range] = 500;
+arr_pistol[WPN.spread] = 10;
+arr_pistol[WPN.proj_speed] = 50;
+arr_pistol[WPN.ammo_type] = WPN_AMMO.small_round;
+arr_pistol[WPN.sprite_frame_index] = 0;
+arr_pistol[WPN.muzzle_offset] = 8;
+global.items[ITEM.pistol] = arr_pistol;
 // Revolver
-arr_revolver[item_attr.type] = item_type.weapon;
-arr_revolver[weapon.name] = "Revolver";
-arr_revolver[weapon.action] = weapon_action.semi_auto;
-arr_revolver[weapon.carry] = weapon_carry.one_handed;
-arr_revolver[weapon.damage] = 6;
-arr_revolver[weapon.range] = 1000;
-arr_revolver[weapon.spread] = 10;
-arr_revolver[weapon.ammo_capacity] = 6;
-arr_revolver[weapon.ammo_type] = weapon_ammo_type.small_round;
-arr_revolver[weapon.sprite_frame_index] = 1;
-arr_revolver[weapon.muzzle_offset] = 8;
-global.items[item.revolver] = arr_revolver;
-// SMG
-arr_smg[item_attr.type] = item_type.weapon;
-arr_smg[weapon.name] = "Submachine Gun";
-arr_smg[weapon.action] = weapon_action.automatic;
-arr_smg[weapon.carry] = weapon_carry.one_handed;
-arr_smg[weapon.damage] = 6;
-arr_smg[weapon.range] = 300;
-arr_smg[weapon.spread] = 10;
-arr_smg[weapon.ammo_capacity] = 12;
-arr_smg[weapon.ammo_type] = weapon_ammo_type.small_round;
-arr_smg[weapon.sprite_frame_index] = 2;
-arr_smg[weapon.muzzle_offset] = 20;
-global.items[item.smg] = arr_smg;
-// LMG
+arr_revolver[ITEM_ATTR.type] = ITEM_TYPE.weapon;
+arr_revolver[WPN.name] = "Revolver";
+arr_revolver[WPN.action] = WPN_ACTION.semi_auto;
+arr_revolver[WPN.carry] = WPN_CARRY.one_handed;
+arr_revolver[WPN.damage] = 6;
+arr_revolver[WPN.range] = 1000;
+arr_revolver[WPN.spread] = 10;
+arr_revolver[WPN.proj_speed] = 50;
+arr_revolver[WPN.ammo_type] = WPN_AMMO.small_round;
+arr_revolver[WPN.sprite_frame_index] = 1;
+arr_revolver[WPN.muzzle_offset] = 8;
+global.items[ITEM.revolver] = arr_revolver;
 </string>
           </argument>
         </arguments>

@@ -153,6 +153,7 @@
     </objects>
     <object>objects\o_casing</object>
     <object>objects\o_giblet</object>
+    <object>objects\o_particle_emitter</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
