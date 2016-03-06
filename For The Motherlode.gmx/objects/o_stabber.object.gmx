@@ -48,7 +48,7 @@ stab_p_type = part_type_create();
 // Sprite stuff
 torso_y_scale = 1;
 walk_wave_t = 0;
-walk_wave_inc = 10;
+walk_wave_inc = 15;
 s_feet_image_index = 0;
 s_feet_image_xscale = 1;
 sprite_index = s_mask_human;
@@ -58,7 +58,7 @@ drawn_blood = true;
 blood_emitter = instance_create(x, y, o_particle_emitter);
 
 // Other
-dmg_pushback = 0;
+proj_pushback = 0;
 gib_threshold = 10;
 
 </string>
@@ -250,7 +250,9 @@ x_stab = x + lengthdir_x(20, image_angle);
 y_stab = y + lengthdir_y(20, image_angle);
 
 if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, false)) {
-    blood_hit(x_stab, y_stab, 20, stab_p_emitter, stab_p_type);
+    audio_play_sound(snd_stab, 0, 0);
+    audio_sound_pitch(snd_stab, random_range(0.8, 1));
+    blood_hit(x_stab, y_stab, 30, stab_p_emitter, stab_p_type);
     shake_screen(10, 10);
     has_stabbed = true;
     drawn_blood = false;
@@ -282,7 +284,7 @@ total_health = (hhealth / max_health) * 100;
 if (total_health &lt;= 0) {
     var num_giblets = sprite_get_number(s_stab_gibs_1);
     var gib_sprite = s_stab_gibs_1;
-    if (dmg_pushback &gt;= gib_threshold) {
+    if (proj_pushback &gt;= gib_threshold) {
         num_giblets = sprite_get_number(s_stab_gibs_2);
         gib_sprite = s_stab_gibs_2;
     }
@@ -290,12 +292,15 @@ if (total_health &lt;= 0) {
         with (instance_create(x, y, o_giblet)) {
             sprite_index = gib_sprite;
             image_index = i;
-            speed = other.dmg_pushback + random_range(-3, 3);
+            speed = other.proj_pushback + random_range(-3, 3);
             image_angle = other.image_angle;
             direction = image_angle - 180 + random_range(-45, 45);
             // Explode from center: (360 / num_giblets) * (i + 1);
         }
     }
+    audio_play_sound(snd_blood_splat, 1, 0);
+    audio_sound_pitch(snd_blood_splat, random_range(0.8, 1));
+    blood_hit(x, y, 100, blood_emitter.p_emitter, blood_emitter.p_type);
     // Set alarm for particle emitter / type destruction (1 second)
     blood_emitter.alarm[0] = room_speed;
     instance_destroy();
@@ -364,11 +369,11 @@ else {
     torso_image_index = 0;
 }
 draw_sprite_shadow_ext(
-    s_stab_torso, torso_image_index, x, y, image_angle,
+    s_torso_stab, torso_image_index, x, y, image_angle,
     270, 5, 1, torso_y_scale, c_black, 0.5
 );
 draw_sprite_ext(
-    s_stab_torso, torso_image_index, x, y, 
+    s_torso_stab, torso_image_index, x, y, 
     1, torso_y_scale, image_angle, c_white, 1
 );
 // Head
@@ -377,6 +382,32 @@ draw_sprite_shadow_ext(
     270, 3, 1, 1, c_black, 0.5,
 );
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Footprints
+if (s_feet_image_index &gt;= sprite_get_number(s_feet) - 1) {
+    surface_set_target(global.surf);
+    draw_sprite_ext(s_footprint, 0, x, y, 1, s_feet_image_xscale, direction, c_white, 0.3);
+    surface_reset_target();   
+}
 </string>
           </argument>
         </arguments>

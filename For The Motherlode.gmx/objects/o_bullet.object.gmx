@@ -25,7 +25,36 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>shadow = instance_create(x + lengthdir_x(20, 270), y + lengthdir_y(20, 270), o_bullet_shadow);
+            <string>///Create trail shadow
+
+trail_shadow = instance_create(
+    x + lengthdir_x(20, 270), 
+    y + lengthdir_y(20, 270), 
+    o_bullet_trail_shadow
+);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Attributes
+
+force = 0;
 </string>
           </argument>
         </arguments>
@@ -48,9 +77,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Destroy shadow
+            <string>/// Destroy trail shadow
 
-with (shadow) {
+with (trail_shadow) {
     instance_destroy();
 }
 </string>
@@ -85,10 +114,38 @@ if (enemy) {
         xx += lengthdir_x(1, direction - 180);
         yy += lengthdir_y(1, direction - 180);
     }
-    blood_hit(xx, yy, 20, enemy.blood_emitter.p_emitter, enemy.blood_emitter.p_type);
+    blood_hit(xx, yy, 30, enemy.blood_emitter.p_emitter, enemy.blood_emitter.p_type);
     enemy.hhealth -= 5;
-    enemy.dmg_pushback = 5;
+    if (enemy.hhealth &gt; 0) {
+        audio_play_sound(snd_blood_hit, 0, 0);
+        audio_sound_pitch(snd_blood_hit, random_range(0.8, 1));
+    }
+    enemy.proj_pushback = force;
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Trail Shadow Position
+
+trail_shadow.x = x + lengthdir_x(5, 270);
+trail_shadow.y = y + lengthdir_y(5, 270);
 </string>
           </argument>
         </arguments>
@@ -111,12 +168,9 @@ if (enemy) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Orientation, Shadow
+            <string>/// Orientation
 
 image_angle = direction;
-
-shadow.x = x + lengthdir_x(5, 270);
-shadow.y = y + lengthdir_y(5, 270);
 </string>
           </argument>
         </arguments>
@@ -164,7 +218,7 @@ instance_destroy();
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Collision
+            <string>/// Blood on Collision
 // this calls destructor, must happen first
 
 var enemy = collision_line(xprevious, yprevious, x, y, o_enemy, true, true)
@@ -192,11 +246,11 @@ if (enemy) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Self, Shadow, &amp; Trail Shadow
+            <string>/// Self, Trail, &amp; Shadow
 
-// draw_shadow for actual bullet
-draw_self();
+draw_sprite_shadow(270, 5, 1, c_black, 0.2);
 draw_trail(10, 2, c_white, -1, true, 0.5);
+draw_self();
 </string>
           </argument>
         </arguments>

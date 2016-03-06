@@ -25,12 +25,43 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// General
+            <string>/// generate smooth noise
+size = 256;
+octaves = 5;
+scale = 2;
+persistence = 1.75;
 
-global.p_sys = part_system_create();
-global.surf = surface_create(room_width, room_height);
+surfaceNoise = huder_SmoothNoise(size, octaves, scale, persistence);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="8" enumb="64">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// draw smooth noise
 
-global.barrier_radius = room_width/2 - 100;
+if ( surface_exists(surfaceNoise))
+    draw_surface(surfaceNoise, (view_wview-size)*0.5, (view_hview-size)*0.5);
+    
+
+  
+
 </string>
           </argument>
         </arguments>
@@ -51,42 +82,48 @@ global.barrier_radius = room_width/2 - 100;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Item IDs &amp; Attributes
+            <string>/// draw buttons with text and make buttons clickable
+draw_set_color(c_white);
 
-enum ITEM {
-    // Drugs
-    turbo,
-    // Weapons
-    pistol,
-    revolver,
-    smg,
-    lmg,
-    pump_shotgun,
-    s_o_shotgun,
-    auto_shotgun,
-    rifle,
-    assault_rifle,
-    minigun,
-    grenade_launcher,
-    sa_grenade_launcher,
-    missile_launcher,
-};
+var h = 10;    
+draw_sprite(guiButton, 0, 10, h);
+    draw_text(48, h+5, "octaves: " + string(octaves));
+draw_sprite(guiButton, 1, 212, h);
 
-enum ITEM_ATTR {
-    type,
-    enum_size
-};
+h = 42;
+draw_sprite(guiButton, 0, 10, h);
+    draw_text(48, h+5, "scale: " + string(scale));
+draw_sprite(guiButton, 1, 212, h);
 
-enum ITEM_TYPE {
-    weapon,
-    useable,  // drugs, bandages, etc.
-    trap,  // includes mines, turrets, etc.
-    craft  // scrap metal, adhesive, etc.
-};
+h = 74;
+draw_sprite(guiButton, 0, 10, h);
+    draw_text(48, h+5, "persistence: " + string(persistence));
+draw_sprite(guiButton, 1, 212, h);
+
+draw_text(300, 10, "press enter to generate");
+// set values
+if ( mouse_check_button_pressed(mb_left) )
+{
+    if ( mouse_x &gt; 0 &amp;&amp; mouse_x &lt; 48 )
+    {
+        if ( mouse_y &gt; 10 &amp;&amp; mouse_y &lt; 30 ) octaves = max(1, octaves-1);
+        if ( mouse_y &gt; 42 &amp;&amp; mouse_y &lt; 62 ) scale = max(1, scale-0.25);
+        if ( mouse_y &gt; 74 &amp;&amp; mouse_y &lt; 94 ) persistence = max(0, persistence-0.05);
+    }
+    
+    if ( mouse_x &gt; 212 &amp;&amp; mouse_x &lt; 233 )
+    {
+        if ( mouse_y &gt; 10 &amp;&amp; mouse_y &lt; 30 ) octaves = octaves+1;
+        if ( mouse_y &gt; 42 &amp;&amp; mouse_y &lt; 62 ) scale = scale+0.25;
+        if ( mouse_y &gt; 74 &amp;&amp; mouse_y &lt; 94 ) persistence = persistence+0.05;
+    }
+}
 </string>
           </argument>
         </arguments>
       </action>
+    </event>
+    <event eventtype="9" enumb="13">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -103,102 +140,10 @@ enum ITEM_TYPE {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Weapon Attributes
+            <string>/// clear old and generate new smooth noise surface
 
-enum WPN {
-    name = 1, // ITEM_ATTR.enum_size,
-    action,
-    carry,
-    damage,
-    range,
-    spread,
-    proj_speed,
-    proj_amount,
-    proj_force,
-    ammo_type,
-    sprite_frame_index,
-    muzzle_offset,  // pixel distance from sprite center to weapon muzzle
-    sound_fire,
-    sound_equip
-    // casing?
-    // push_back?
-};
-
-enum WPN_CARRY {  // corresonds to sprite frame indices for 's_torso_wpn'
-    single,
-    double,
-    shoulder,
-    hip
-};
-
-enum WPN_ACTION {
-    semi_auto, // as fast as you click (no shoot delay)
-    automatic,
-    single_shot // shoot delay
-};
-
-enum WPN_AMMO {
-    small_round,
-    shell,
-    missile
-};
-
-// pixel distance from torso sprite center to weapon sprite center
-global.wpn_carry_offset[WPN_CARRY.single] = 17;
-global.wpn_carry_offset[WPN_CARRY.double] = 14;
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Weapons
-
-// Pistol
-arr_pistol[ITEM_ATTR.type] = ITEM_TYPE.weapon;
-arr_pistol[WPN.name] = "Pathetic Pistol";
-arr_pistol[WPN.action] = WPN_ACTION.semi_auto;
-arr_pistol[WPN.carry] = WPN_CARRY.single;
-arr_pistol[WPN.damage] = 6;
-arr_pistol[WPN.range] = 500;
-arr_pistol[WPN.spread] = 10;
-arr_pistol[WPN.proj_speed] = 50;
-arr_pistol[WPN.proj_amount] = 1;
-arr_pistol[WPN.proj_force] = 5;
-arr_pistol[WPN.ammo_type] = WPN_AMMO.small_round;
-arr_pistol[WPN.sprite_frame_index] = 0;
-arr_pistol[WPN.muzzle_offset] = 8;
-arr_pistol[WPN.sound_fire] = snd_pistol_fire;
-global.items[ITEM.pistol] = arr_pistol;
-// Revolver
-arr_revolver[ITEM_ATTR.type] = ITEM_TYPE.weapon;
-arr_revolver[WPN.name] = "Revolver";
-arr_revolver[WPN.action] = WPN_ACTION.automatic;
-arr_revolver[WPN.carry] = WPN_CARRY.single;
-arr_revolver[WPN.damage] = 6;
-arr_revolver[WPN.range] = 1000;
-arr_revolver[WPN.spread] = 10;
-arr_revolver[WPN.proj_speed] = 50;
-arr_revolver[WPN.proj_amount] = 1;
-arr_revolver[WPN.proj_force] = 10;
-arr_revolver[WPN.ammo_type] = WPN_AMMO.small_round;
-arr_revolver[WPN.sprite_frame_index] = 1;
-arr_revolver[WPN.muzzle_offset] = 10;
-global.items[ITEM.revolver] = arr_revolver;
+surface_free(surfaceNoise);
+surfaceNoise = huder_SmoothNoise(size, octaves, scale, persistence);
 </string>
           </argument>
         </arguments>

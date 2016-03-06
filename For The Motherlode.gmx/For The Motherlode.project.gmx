@@ -26,16 +26,22 @@
     <extension index="0">extensions\Essential Scripts</extension>
     <extension index="1">extensions\Draw Trail</extension>
     <extension index="2">extensions\Free Shaders</extension>
+    <extension index="3">extensions\Smooth Noise Generator</extension>
   </NewExtensions>
-  <sounds name="sound"/>
+  <sounds name="sound">
+    <sound>sound\snd_pistol_fire</sound>
+    <sound>sound\snd_stab</sound>
+    <sound>sound\snd_blood_hit</sound>
+    <sound>sound\snd_blood_splat</sound>
+  </sounds>
   <sprites name="sprites">
     <sprites name="Human">
       <sprite>sprites\s_mask_human</sprite>
-      <sprite>sprites\s_plr_torso</sprite>
+      <sprite>sprites\s_torso_wpn</sprite>
       <sprite>sprites\s_plr_head</sprite>
       <sprite>sprites\s_feet_disconnected</sprite>
       <sprite>sprites\s_feet</sprite>
-      <sprite>sprites\s_stab_torso</sprite>
+      <sprite>sprites\s_torso_stab</sprite>
       <sprite>sprites\s_stab_gibs_1</sprite>
       <sprite>sprites\s_stab_gibs_2</sprite>
     </sprites>
@@ -49,6 +55,7 @@
       <sprite>sprites\s_blood_smear_ne</sprite>
       <sprite>sprites\s_footprints_bloody</sprite>
       <sprite>sprites\s_footprints</sprite>
+      <sprite>sprites\s_footsteps</sprite>
       <sprite>sprites\s_footsteps_bloody</sprite>
       <sprite>sprites\s_plr_melee</sprite>
       <sprite>sprites\s_remains</sprite>
@@ -69,9 +76,9 @@
       <sprite>sprites\s_bullet</sprite>
     </sprites>
     <sprites name="FX">
-      <sprite>sprites\s_footsteps</sprite>
       <sprite>sprites\s_casing</sprite>
       <sprite>sprites\s_blood_decal</sprite>
+      <sprite>sprites\s_footprint</sprite>
     </sprites>
   </sprites>
   <backgrounds name="background"/>
@@ -129,17 +136,20 @@
       <script>scripts\shake_screen.gml</script>
       <script>scripts\draw_blood.gml</script>
     </scripts>
+    <script>scripts\huder_SmoothNoise.gml</script>
   </scripts>
   <shaders name="shaders">
-    <shader type="GLSLES">shaders\sh_alpha_pre_multiplyer.shader</shader>
+    <shader type="GLSLES">shaders\alpha_clipping.shader</shader>
   </shaders>
   <objects name="objects">
-    <object>objects\o_handler</object>
-    <object>objects\o_globals</object>
-    <object>objects\o_crosshair</object>
-    <object>objects\o_camera</object>
-    <object>objects\o_player</object>
-    <object>objects\o_motherlode</object>
+    <objects name="Persistent">
+      <object>objects\o_globals</object>
+      <object>objects\o_handler</object>
+      <object>objects\o_camera</object>
+      <object>objects\o_crosshair</object>
+      <object>objects\o_motherlode</object>
+      <object>objects\o_player</object>
+    </objects>
     <object>objects\o_crate</object>
     <object>objects\o_collider</object>
     <objects name="Enemies">
@@ -149,11 +159,13 @@
     </objects>
     <objects name="Projectiles">
       <object>objects\o_bullet</object>
-      <object>objects\o_bullet_shadow</object>
+      <object>objects\o_bullet_trail_shadow</object>
     </objects>
-    <object>objects\o_casing</object>
-    <object>objects\o_giblet</object>
-    <object>objects\o_particle_emitter</object>
+    <objects name="FX">
+      <object>objects\o_particle_emitter</object>
+      <object>objects\o_giblet</object>
+      <object>objects\o_casing</object>
+    </objects>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
