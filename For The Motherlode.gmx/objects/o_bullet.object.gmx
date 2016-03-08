@@ -25,13 +25,10 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Create trail shadow
+            <string>/// Attributes
 
-trail_shadow = instance_create(
-    x + lengthdir_x(20, 270), 
-    y + lengthdir_y(20, 270), 
-    o_bullet_trail_shadow
-);
+force = 0;
+enemy_collision = false;
 </string>
           </argument>
         </arguments>
@@ -52,9 +49,13 @@ trail_shadow = instance_create(
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Attributes
+            <string>///Create trail shadow
 
-force = 0;
+trail_shadow = instance_create(
+    x + lengthdir_x(5, 270), 
+    y + lengthdir_y(5, 270), 
+    o_bullet_trail_shadow
+);
 </string>
           </argument>
         </arguments>
@@ -108,16 +109,19 @@ with (trail_shadow) {
 
 var enemy = collision_line(xprevious, yprevious, x, y, o_enemy, false, true)
 if (enemy) {
+    enemy_collision = true;
     var xx = x + lengthdir_x(distance_to_object(enemy), direction - 180);
     var yy = y + lengthdir_y(distance_to_object(enemy), direction - 180);
     while (place_meeting(xx, yy, enemy)) {
         xx += lengthdir_x(1, direction - 180);
         yy += lengthdir_y(1, direction - 180);
     }
+    x = xx;
+    y = yy;
     blood_hit(xx, yy, 30, enemy.blood_emitter.p_emitter, enemy.blood_emitter.p_type);
     enemy.hhealth -= 5;
-    if (enemy.hhealth &gt; 0) {
-        audio_play_sound(snd_blood_hit, 0, 0);
+    if (enemy.hhealth &gt; 0) {  // play death sound otherwise
+        audio_play_sound_at(snd_blood_hit, xx, yy, 0, 0, 0, 0, false, 0);
         audio_sound_pitch(snd_blood_hit, random_range(0.8, 1));
     }
     enemy.proj_pushback = force;
@@ -221,9 +225,8 @@ instance_destroy();
             <string>/// Blood on Collision
 // this calls destructor, must happen first
 
-var enemy = collision_line(xprevious, yprevious, x, y, o_enemy, true, true)
-if (enemy) {
-    draw_blood(enemy.x, enemy.y);
+if (enemy_collision) {
+    draw_blood(x, y);
     instance_destroy();
 }
 </string>
@@ -249,7 +252,10 @@ if (enemy) {
             <string>/// Self, Trail, &amp; Shadow
 
 draw_sprite_shadow(270, 5, 1, c_black, 0.2);
-draw_trail(10, 2, c_white, -1, true, 0.5);
+//draw_trail(10, 4, c_orange, -1, true, 1);
+//draw_trail(10, 3, c_yellow, -1, true, 1);
+draw_trail(10, 2, c_white, -1, true, 1);
+// mess with colors and trail size for different bullet effects
 draw_self();
 </string>
           </argument>

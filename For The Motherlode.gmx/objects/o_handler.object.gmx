@@ -33,6 +33,8 @@ instance_create(mouse_x, mouse_y, o_crosshair);
 instance_create(0, 0, o_camera);
 instance_create(room_width/2, room_height/2, o_motherlode);
 
+instance_create(room_width/2, room_height/2, o_enemy);
+/*
 repeat(10)
     instance_create(random(room_width), random(room_height), o_stabber);
 

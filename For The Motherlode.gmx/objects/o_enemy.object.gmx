@@ -26,8 +26,7 @@
           <argument>
             <kind>1</kind>
             <string>sprite_index = s_mask_human;
-blood_p_emitter = part_emitter_create(global.p_sys);
-blood_p_type = part_type_create();
+blood_emitter = instance_create(x, y, o_particle_emitter);
 
 hhealth = 99999999;
 
