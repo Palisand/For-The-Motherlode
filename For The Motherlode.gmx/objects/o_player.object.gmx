@@ -184,7 +184,7 @@ switch (w_current[WPN.action]) {
 }
 */
 
-var spread = 1;
+var spread = 0;
 if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
     audio_play_sound(w_current[WPN.sound_fire], 0, false);
     audio_sound_pitch(w_current[WPN.sound_fire], random_range(0.9, 1.1));

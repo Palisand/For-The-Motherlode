@@ -154,6 +154,33 @@ trail_shadow.y = y + lengthdir_y(5, 270);
           </argument>
         </arguments>
       </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Destroy if past 1/2 room size outside room
+if (x &lt; -room_width/2 ||
+    x &gt; room_width * 1.5 ||
+    y &lt; -room_height/2 ||
+    y &gt; room_height * 1.5) {
+    instance_destroy();    
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
     </event>
     <event eventtype="3" enumb="0">
       <action>
@@ -175,31 +202,6 @@ trail_shadow.y = y + lengthdir_y(5, 270);
             <string>/// Orientation
 
 image_angle = direction;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="7" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Destroy
-
-instance_destroy();
 </string>
           </argument>
         </arguments>
@@ -252,10 +254,11 @@ if (enemy_collision) {
             <string>/// Self, Trail, &amp; Shadow
 
 draw_sprite_shadow(270, 5, 1, c_black, 0.2);
-//draw_trail(10, 4, c_orange, -1, true, 1);
-//draw_trail(10, 3, c_yellow, -1, true, 1);
+draw_trail(20, 4, c_orange, -1, true, 1);
+draw_trail(10, 3, c_yellow, -1, true, 1);
 draw_trail(10, 2, c_white, -1, true, 1);
-// mess with colors and trail size for different bullet effects
+// mess with colors, alpha, and trail length for different bullet effects
+// AND KEEP TRACK OF SHADOW!
 draw_self();
 </string>
           </argument>
