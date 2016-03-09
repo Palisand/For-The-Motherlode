@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>/// Trail
 
-draw_trail(10, 2, c_black, -1, true, 0.1);
+draw_trail(10, 4, c_black, -1, true, 0.1);
 </string>
           </argument>
         </arguments>

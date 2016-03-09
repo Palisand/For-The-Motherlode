@@ -39,6 +39,10 @@ shoot_delay = 6;
 muzzle_flash_p_emitter = part_emitter_create(global.p_sys);
 muzzle_flash_p_type = part_type_create();
 
+// Audio
+audio_listener_position(x, y, 0);
+audio_listener_orientation(0,1,0,0,0,1);
+
 // Bindings
 key_up = ord("W");
 key_down = ord("S");
@@ -49,10 +53,11 @@ mb_shoot = mb_left;
 
 // Sprite (Body)
 s_torso_current = s_torso_wpn;
-walk_wave_t = 0;
-walk_wave_inc = 15;
 s_feet_image_index = 0;
 s_feet_image_xscale = 1;
+walk_wave_t = 0;
+walk_wave_inc = 4;
+drawn_footprint = false;
 
 // Weapon
 base_dist_1h = 17;// pixel distance from torso sprite center to weapon sprite center
@@ -95,6 +100,30 @@ part_type_destroy(muzzle_flash_p_type);
         </arguments>
       </action>
     </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// drawn_footprint = true
+drawn_footprint = false;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="2" enumb="0">
       <action>
         <libid>1</libid>
@@ -113,7 +142,6 @@ part_type_destroy(muzzle_flash_p_type);
           <argument>
             <kind>1</kind>
             <string>/// can_shoot = true
-
 can_shoot = true;
 </string>
           </argument>
@@ -156,10 +184,10 @@ switch (w_current[WPN.action]) {
 }
 */
 
-var spread = 5;
+var spread = 0;
 if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
-    audio_play_sound(w_current[WPN.sound_fire], 0, 0);
-    audio_sound_pitch(w_current[WPN.sound_fire], random_range(0.8, 1));
+    audio_play_sound(w_current[WPN.sound_fire], 0, false);
+    audio_sound_pitch(w_current[WPN.sound_fire], random_range(0.9, 1.1));
     //repeat(5) {
         with(
             instance_create(
@@ -168,8 +196,9 @@ if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
                 o_bullet
             )
         ) {
-            speed = 50 + random_range(-3, 3);  // WPN.proj_speed (missiles have acceleration though)
+            speed = 50;// + random_range(-3, 3);  // WPN.proj_speed (missiles have acceleration though)
             direction = other.image_angle + random_range(-spread/2, spread/2); // WPN.spread
+            image_angle = direction;
             // damage = wpn_current[WPN.damage];
             force = other.w_current[WPN.proj_force];
         }
@@ -223,6 +252,9 @@ if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
             <kind>1</kind>
             <string>/// Movement
 
+// Audio
+audio_listener_position(x, y, 0);
+
 // Orientation
 image_angle = point_direction(x, y, o_crosshair.x, o_crosshair.y);
 
@@ -268,17 +300,19 @@ else if (!move_right &amp;&amp; !move_left) {
 var amplitude = sprite_get_number(s_feet) - 0.9;
 var wave_val = amplitude * sin(degtorad(walk_wave_t));
 s_feet_image_index = abs(wave_val);
+// set image x-scale
 if (wave_val &lt; 0) {
     s_feet_image_xscale = -1;
 }
 else {
     s_feet_image_xscale = 1;
 }
-
+// animate
 if (move_up || move_down || move_left || move_right) {
-    walk_wave_t += walk_wave_inc; 
+    walk_wave_t += walk_wave_inc * speed; 
 }
 else {
+    // smoothly return to first image index (walk_wave_t = 0 ~ wave_val = 0);
     if (abs(wave_val) &gt; 0.1) {
         if (abs(wave_val) &lt; abs(amplitude * sin(degtorad(walk_wave_t + 1)))) {
             walk_wave_t -= walk_wave_inc;
@@ -526,10 +560,14 @@ draw_set_alpha(1);
           <argument>
             <kind>1</kind>
             <string>/// Footprints
-if (s_feet_image_index &gt;= sprite_get_number(s_feet) - 1) {
+
+// script too
+if (!drawn_footprint &amp;&amp; round(s_feet_image_index) == sprite_get_number(s_feet) - 1) {
     surface_set_target(global.surf);
-    draw_sprite_ext(s_footprint, 0, x, y, 1, s_feet_image_xscale, direction, c_white, 0.4);
-    surface_reset_target();   
+    draw_sprite_ext(s_footprint, 0, x, y, 1, s_feet_image_xscale, direction, c_white, 0.3);
+    surface_reset_target();
+    drawn_footprint = true;
+    alarm[1] = walk_wave_inc * 2;
 }
 </string>
           </argument>
