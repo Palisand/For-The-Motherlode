@@ -54,9 +54,19 @@ global.barrier_radius = room_width/2 - 100;
             <string>/// Item IDs &amp; Attributes
 
 enum ITEM {
-    // Drugs
-    turbo,
-    // Weapons
+    // Consumables
+    tonic,  // health restoration
+    concentrated_tonic,  // greater health restoration
+    turbo_tonic,  // faster health restoration
+    concentrated_turbo_tonic,
+    bandages,  // stop bleed-out (no poison in game, so essentially antivenin)
+    adrenaline,  // speed movement increase and single-shot shoot delay decrease (blur on movement)
+    peripherine, // increased peripheral vision
+    jesus_juice,  // damage resistance increase
+    yams, // damage increase (the power that be)
+    slo_mo, // slow motion (slo-mo, what an original name)
+    deadeye, // decreased weapon spread (radial blur)
+    // Guns
     pistol,
     revolver,
     smg,
@@ -64,11 +74,13 @@ enum ITEM {
     pump_shotgun,
     s_o_shotgun,
     auto_shotgun,
-    rifle,
-    assault_rifle,
+    rifle,  // single shot
+    battle_rifle,  // semi-auto
+    assault_rifle,  // auto
     minigun,
     grenade_launcher,
     sa_grenade_launcher,
+    auto_grenade_launcher,
     missile_launcher,
 };
 
@@ -78,8 +90,8 @@ enum ITEM_ATTR {
 };
 
 enum ITEM_TYPE {
-    weapon,
-    useable,  // drugs, bandages, etc.
+    gun,
+    consumables,
     trap,  // includes mines, turrets, etc.
     craft  // scrap metal, adhesive, etc.
 };
@@ -103,10 +115,11 @@ enum ITEM_TYPE {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Weapon Attributes
+            <string>/// Gun Attributes
 
-enum WPN {
+enum GUN {
     name = 1, // ITEM_ATTR.enum_size,
+    description,
     action,
     carry,
     damage,
@@ -115,37 +128,37 @@ enum WPN {
     proj_speed,
     proj_amount,
     proj_force,
-    ammo_type,
+    ammo_type,  // determines casing
     sprite_frame_index,
     muzzle_offset,  // pixel distance from sprite center to weapon muzzle
     sound_fire,
     sound_equip
-    // casing?
-    // push_back?
 };
 
-enum WPN_CARRY {  // corresonds to sprite frame indices for 's_torso_wpn'
+enum GUN_CARRY {  // corresonds to sprite frame indices for 's_torso_wpn'
     single,
     double,
     shoulder,
     hip
 };
 
-enum WPN_ACTION {
+enum GUN_ACTION {
     semi_auto, // as fast as you click (no shoot delay)
     automatic,
     single_shot // shoot delay
 };
 
-enum WPN_AMMO {
+enum GUN_AMMO {
     small_round,
+    heavy_round,
     shell,
+    grenade,
     missile
 };
 
 // pixel distance from torso sprite center to weapon sprite center
-global.wpn_carry_offset[WPN_CARRY.single] = 17;
-global.wpn_carry_offset[WPN_CARRY.double] = 14;
+global.gun_carry_offset[GUN_CARRY.single] = 17;
+global.gun_carry_offset[GUN_CARRY.double] = 14;
 </string>
           </argument>
         </arguments>
@@ -166,38 +179,38 @@ global.wpn_carry_offset[WPN_CARRY.double] = 14;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Weapons
+            <string>/// Guns
 
 // Pistol
-arr_pistol[ITEM_ATTR.type] = ITEM_TYPE.weapon;
-arr_pistol[WPN.name] = "Pathetic Pistol";
-arr_pistol[WPN.action] = WPN_ACTION.semi_auto;
-arr_pistol[WPN.carry] = WPN_CARRY.single;
-arr_pistol[WPN.damage] = 6;
-arr_pistol[WPN.range] = 500;
-arr_pistol[WPN.spread] = 10;
-arr_pistol[WPN.proj_speed] = 50;
-arr_pistol[WPN.proj_amount] = 1;
-arr_pistol[WPN.proj_force] = 5;
-arr_pistol[WPN.ammo_type] = WPN_AMMO.small_round;
-arr_pistol[WPN.sprite_frame_index] = 0;
-arr_pistol[WPN.muzzle_offset] = 8;
-arr_pistol[WPN.sound_fire] = snd_pistol_fire;
+arr_pistol[ITEM_ATTR.type] = ITEM_TYPE.gun;
+arr_pistol[GUN.name] = "Pathetic Pistol";
+arr_pistol[GUN.action] = GUN_ACTION.semi_auto;
+arr_pistol[GUN.carry] = GUN_CARRY.single;
+arr_pistol[GUN.damage] = 6;
+arr_pistol[GUN.range] = 500;
+arr_pistol[GUN.spread] = 10;
+arr_pistol[GUN.proj_speed] = 50;
+arr_pistol[GUN.proj_amount] = 1;
+arr_pistol[GUN.proj_force] = 5;
+arr_pistol[GUN.ammo_type] = GUN_AMMO.small_round;
+arr_pistol[GUN.sprite_frame_index] = 0;
+arr_pistol[GUN.muzzle_offset] = 8;
+arr_pistol[GUN.sound_fire] = snd_pistol_fire;
 global.items[ITEM.pistol] = arr_pistol;
 // Revolver
-arr_revolver[ITEM_ATTR.type] = ITEM_TYPE.weapon;
-arr_revolver[WPN.name] = "Revolver";
-arr_revolver[WPN.action] = WPN_ACTION.automatic;
-arr_revolver[WPN.carry] = WPN_CARRY.single;
-arr_revolver[WPN.damage] = 6;
-arr_revolver[WPN.range] = 1000;
-arr_revolver[WPN.spread] = 10;
-arr_revolver[WPN.proj_speed] = 50;
-arr_revolver[WPN.proj_amount] = 1;
-arr_revolver[WPN.proj_force] = 10;
-arr_revolver[WPN.ammo_type] = WPN_AMMO.small_round;
-arr_revolver[WPN.sprite_frame_index] = 1;
-arr_revolver[WPN.muzzle_offset] = 10;
+arr_revolver[ITEM_ATTR.type] = ITEM_TYPE.gun;
+arr_revolver[GUN.name] = "Revolver";
+arr_revolver[GUN.action] = GUN_ACTION.automatic;
+arr_revolver[GUN.carry] = GUN_CARRY.single;
+arr_revolver[GUN.damage] = 6;
+arr_revolver[GUN.range] = 1000;
+arr_revolver[GUN.spread] = 10;
+arr_revolver[GUN.proj_speed] = 50;
+arr_revolver[GUN.proj_amount] = 1;
+arr_revolver[GUN.proj_force] = 10;
+arr_revolver[GUN.ammo_type] = GUN_AMMO.small_round;
+arr_revolver[GUN.sprite_frame_index] = 1;
+arr_revolver[GUN.muzzle_offset] = 10;
 global.items[ITEM.revolver] = arr_revolver;
 </string>
           </argument>

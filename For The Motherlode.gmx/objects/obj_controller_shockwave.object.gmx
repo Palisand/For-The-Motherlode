@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>999</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,41 +25,61 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>randomize();
+            <string>///Shader uniform setup
 
-instance_create(0, 0, o_globals);
-instance_create(0, 0, o_player);
-instance_create(mouse_x, mouse_y, o_crosshair);
-instance_create(0, 0, o_camera);
-instance_create(room_width/2, room_height/2, o_motherlode);
+draw_set_color(c_white);
 
-instance_create(room_width/2, room_height/2, o_enemy);
-repeat(10000)
-    draw_blood(random(room_width), random(room_height));
-    
-/*
-repeat(10)
-    instance_create(random(room_width), random(room_height), o_stabber);
+uni_time = shader_get_uniform(shd_shockwave,"time");
+var_time_var = 0;
 
+uni_mouse_pos = shader_get_uniform(shd_shockwave,"mouse_pos");
+var_mouse_pos_x = o_crosshair.x - view_xview;
+var_mouse_pos_y = o_crosshair.y - view_yview;
 
-// Terrain
-/*
-var edge_buffer = 50; // will probably need this for global.surf too
+uni_resolution = shader_get_uniform(shd_shockwave,"resolution");
+var_resolution_x = view_wview;
+var_resolution_y = view_hview;
 
-surf_noise = huder_SmoothNoise(room_width + edge_buffer * 2, 4, 1, 1);
-s_terrain_1 = sprite_create_from_surface(surf_noise, 0, 0, room_width + (edge_buffer * 2), room_height + (edge_buffer * 2), false, false, edge_buffer, edge_buffer);
-//sprite_save(s_terrain_1, 0, working_directory + "s_terrain_1.png");
-surf_noise = huder_SmoothNoise(room_width + edge_buffer * 2, 8, 1, 1);
-s_terrain_2 = sprite_create_from_surface(surf_noise, 0, 0, room_width + (edge_buffer * 2), room_height + (edge_buffer * 2), false, false, edge_buffer, edge_buffer);
-//sprite_save(s_terrain_1, 0, working_directory + "s_terrain_2.png");
-texture_set_interpolation(true);
-surf_noise = huder_SmoothNoise(room_width + (edge_buffer * 2), 8, 2, 3);
-s_smooth_noise = sprite_create_from_surface(surf_noise, 0, 0, room_width + (edge_buffer * 2), room_height + (edge_buffer * 2), false, false, edge_buffer, edge_buffer);
-texture_set_interpolation(false);
-surface_free(surf_noise);
-sprite_set_alpha_from_sprite(s_terrain_2, s_smooth_noise);
-*/
+uni_shock_amplitude = shader_get_uniform(shd_shockwave,"shock_amplitude");
+var_shock_amplitude = 10;
 
+uni_shock_refraction = shader_get_uniform(shd_shockwave,"shock_refraction");
+var_shock_refraction = 0.8;
+
+uni_shock_width = shader_get_uniform(shd_shockwave,"shock_width");
+var_shock_width = 0.01;
+
+shader_enabled = true;
+full_screen_effect = true;
+
+shock_enabled = false;
+
+/*surf = surface_create(view_wview, view_hview);
+view_surface_id[0] = surf;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>shock_enabled = false;
+var_time_var = 0;
 </string>
           </argument>
         </arguments>
@@ -82,68 +102,26 @@ sprite_set_alpha_from_sprite(s_terrain_2, s_smooth_noise);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// End, Restart, Fullscreen
+            <string>///Keyboard checks
 
-if (keyboard_check_pressed(vk_escape)) {
-    game_end();
-}
+if keyboard_check(ord('1')) &amp;&amp; keyboard_check(vk_up) var_shock_amplitude++;
+if keyboard_check(ord('1')) &amp;&amp; keyboard_check(vk_down) var_shock_amplitude--;
 
-if (keyboard_check_pressed(ord("R"))) {
-    game_restart();
-}
+if keyboard_check(ord('2')) &amp;&amp; keyboard_check(vk_up) var_shock_refraction += 0.01;
+if keyboard_check(ord('2')) &amp;&amp; keyboard_check(vk_down) var_shock_refraction -= 0.01;
 
-if (keyboard_check_pressed(ord("F"))) {
-    window_set_fullscreen(!window_get_fullscreen());
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Noise
-/*
-if (keyboard_check(ord("1"))) {
-    if (mouse_wheel_up()) {
-        octaves++;
-    }
-    if (mouse_wheel_down()) {
-        octaves--;
-    }
-}
-if (keyboard_check(ord("2"))) {
-    if (mouse_wheel_up()) {
-        scale++;
-    }
-    if (mouse_wheel_down()) {
-        scale--;
-    }
-}
-if (keyboard_check(ord("3"))) {
-    if (mouse_wheel_up()) {
-        persistence++;
-    }
-    if (mouse_wheel_down()) {
-        persistence--;
-    }
-}
+if keyboard_check(ord('3')) &amp;&amp; keyboard_check(vk_up) var_shock_width += 0.01;
+if keyboard_check(ord('3')) &amp;&amp; keyboard_check(vk_down) var_shock_width -= 0.01;
 
-if (keyboard_check_pressed(vk_enter)) {
-    surf_noise = huder_SmoothNoise(room_width, octaves, scale, persistence);
+var_resolution_x = view_wview;
+var_resolution_y = view_hview;
+
+if mouse_check_button(mb_left) and shock_enabled = false
+{
+    shock_enabled = true;
+    var_mouse_pos_x = o_crosshair.x - view_xview;
+    var_mouse_pos_y = o_crosshair.y - view_yview;
+    alarm[0] = 60;
 }
 </string>
           </argument>
@@ -167,39 +145,49 @@ if (keyboard_check_pressed(vk_enter)) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// FPS
-draw_text(0, 0, fps);
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Noise
-/*
-draw_text(0, 20, "octaves: " + string(octaves));
-draw_text(0, 40, "scale: " + string(scale));
-draw_text(0, 60, "persistence: " + string(persistence));
+            <string>///Fullscreen draw
+
+if shader_enabled and shock_enabled 
+    {
+        shader_set(shd_shockwave);
+        var_time_var+=0.004;
+    }
+    shader_set_uniform_f(uni_time, var_time_var);
+    shader_set_uniform_f(uni_mouse_pos, var_mouse_pos_x, var_mouse_pos_y);
+    shader_set_uniform_f(uni_resolution, var_resolution_x, var_resolution_y);
+    shader_set_uniform_f(uni_shock_amplitude, var_shock_amplitude);
+    shader_set_uniform_f(uni_shock_refraction, var_shock_refraction );
+    shader_set_uniform_f(uni_shock_width, var_shock_width);
+    if full_screen_effect {
+        if (window_get_fullscreen()) {
+            // assuming screen w &gt; h
+            var diff = display_get_height() - view_hview;
+            // must draw stretched due to shader resolution
+            draw_surface_stretched(application_surface, 0, 0, view_wview + diff, view_hview + diff);
+        }
+        else {
+            draw_surface(application_surface, 0, 0);
+        }
+    }
+shader_reset();
+
+draw_text(0,0,"Real FPS: "+string(fps_real));
+draw_text(0,12,"Shock amplitude (1 and scroll to adjust): "+string(var_shock_amplitude));
+draw_text(0,24,"Shock refraction (2 and scroll to adjust): "+string(var_shock_refraction));
+draw_text(0,36,"Shock width (3 and scroll to adjust): "+string(var_shock_width));
+draw_text(0,48,"Alarm[0]: "+string(alarm[0]));
+
+draw_text(0,60,"Spacebar to toggle shader");
+//draw_text(0,72,"Shift key to toggle fullscreen or sprite only"); //not currently working
+draw_text(0,84,"Left mouse click to start a shockwave");
+draw_text(0,96,"Escape key to exit");
+
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="9" enumb="27">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -216,16 +204,13 @@ draw_text(0, 60, "persistence: " + string(persistence));
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Terrain
-/*
-var c_terrain_beige = make_colour_hsv(30, 150, 200);
-var c_terrain_brown = make_colour_hsv(20, 150, 200);
-draw_sprite_ext(s_terrain_1, 0, 0, 0, 1, 1, 0, c_terrain_beige, 1);
-draw_sprite_ext(s_terrain_2, 0, 0, 0, 1, 1, 0, c_terrain_brown, 1);
+            <string>game_end();
 </string>
           </argument>
         </arguments>
       </action>
+    </event>
+    <event eventtype="10" enumb="32">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -242,13 +227,13 @@ draw_sprite_ext(s_terrain_2, 0, 0, 0, 1, 1, 0, c_terrain_brown, 1);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Surface
-
-draw_surface(global.surf, 0, 0);
+            <string>shader_enabled = !shader_enabled;
 </string>
           </argument>
         </arguments>
       </action>
+    </event>
+    <event eventtype="10" enumb="16">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -265,17 +250,7 @@ draw_surface(global.surf, 0, 0);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Grid &amp; Barrier
-
-/*
-for (var i = 0; i &lt; room_width; i += room_width / 5) {
-    draw_line(i, 0, i, room_height);
-    draw_line(0, i, room_width, i);
-}
-
-/*
-draw_set_circle_precision(64);
-draw_circle(room_width/2, room_height/2, global.barrier_radius, true);
+            <string>full_screen_effect = !full_screen_effect;
 </string>
           </argument>
         </arguments>

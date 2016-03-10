@@ -60,9 +60,6 @@ walk_wave_inc = 4;
 drawn_footprint = false;
 
 // Weapon
-base_dist_1h = 17;// pixel distance from torso sprite center to weapon sprite center
-base_dist_2h = 0;
-
 w_index = 0;
 w_inventory = ds_list_create();
 ds_list_add(w_inventory, ITEM.pistol);
@@ -168,16 +165,16 @@ can_shoot = true;
             <string>/// Shooting
 
 /*
-switch (w_current[WPN.action]) {
-    case WPN_ACTION.semi_auto:
+switch (w_current[GUN.action]) {
+    case GUN_ACTION.semi_auto:
         if (mouse_check_button_pressed(mb_shoot)) {
         }
         break;
-    case WPN_ACTION.automatic:
+    case GUN_ACTION.automatic:
         if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
         }
         break;
-    case WPN_ACTION.single_shot:
+    case GUN_ACTION.single_shot:
         if (mouse_check_button_pressed(mb_shoot) &amp;&amp; can_shoot) {
         }
         break;
@@ -186,28 +183,28 @@ switch (w_current[WPN.action]) {
 
 var spread = 0;
 if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
-    audio_play_sound(w_current[WPN.sound_fire], 0, false);
-    audio_sound_pitch(w_current[WPN.sound_fire], random_range(0.9, 1.1));
+    audio_play_sound(w_current[GUN.sound_fire], 0, false);
+    audio_sound_pitch(w_current[GUN.sound_fire], random_range(0.9, 1.1));
     //repeat(5) {
         with(
             instance_create(
-                x + lengthdir_x(global.wpn_carry_offset[w_current[WPN.carry]] + w_current[WPN.muzzle_offset], image_angle),
-                y + lengthdir_y(global.wpn_carry_offset[w_current[WPN.carry]] + w_current[WPN.muzzle_offset], image_angle),
+                x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
+                y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
                 o_bullet
             )
         ) {
-            speed = 50;// + random_range(-3, 3);  // WPN.proj_speed (missiles have acceleration though)
-            direction = other.image_angle + random_range(-spread/2, spread/2); // WPN.spread
+            speed = 50;// + random_range(-3, 3);  // GUN.proj_speed (missiles have acceleration though)
+            direction = other.image_angle + random_range(-spread/2, spread/2); // GUN.spread
             image_angle = direction;
-            // damage = wpn_current[WPN.damage];
-            force = other.w_current[WPN.proj_force];
+            // damage = wpn_current[GUN.damage];
+            force = other.w_current[GUN.proj_force];
         }
     //}
     
     with (
         instance_create(
-            x + lengthdir_x(global.wpn_carry_offset[w_current[WPN.carry]], image_angle),
-            y + lengthdir_y(global.wpn_carry_offset[w_current[WPN.carry]], image_angle),
+            x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
+            y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
             o_casing
         )
     ) {
@@ -218,8 +215,8 @@ if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
     }
     
     muzzle_flash(
-        x + lengthdir_x(global.wpn_carry_offset[w_current[WPN.carry]] + w_current[WPN.muzzle_offset], image_angle),
-        y + lengthdir_y(global.wpn_carry_offset[w_current[WPN.carry]] + w_current[WPN.muzzle_offset], image_angle),
+        x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
+        y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
         4, 0, 32, image_angle, muzzle_flash_p_emitter, muzzle_flash_p_type
     );
 
@@ -470,19 +467,19 @@ draw_sprite_ext(
 );
 // Torso (shadow)
 draw_sprite_shadow_ext(
-    s_torso_current, w_current[WPN.carry], x, y, image_angle,
+    s_torso_current, w_current[GUN.carry], x, y, image_angle,
     270, 5, 1, 1, c_black, 0.5
 );
 // Weapon (shadow)
 draw_sprite_shadow_ext(
-    s_w_primary, w_current[WPN.sprite_frame_index],
-    x + lengthdir_x(global.wpn_carry_offset[w_current[WPN.carry]], image_angle), 
-    y + lengthdir_y(global.wpn_carry_offset[w_current[WPN.carry]], image_angle),
+    s_w_primary, w_current[GUN.sprite_frame_index],
+    x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]], image_angle), 
+    y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
     image_angle,
     270, 5, 1, 1, c_black, 0.5
 );
 // Torso (sprite)
-draw_sprite_ext(s_torso_current, w_current[WPN.carry], x, y, 1, 1, image_angle, c_white, 1);
+draw_sprite_ext(s_torso_current, w_current[GUN.carry], x, y, 1, 1, image_angle, c_white, 1);
 // Head
 draw_sprite_shadow_ext(
     s_plr_head, 0, x, y, image_angle,
@@ -491,9 +488,9 @@ draw_sprite_shadow_ext(
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
 // Weapon (sprite)
 draw_sprite_ext(
-    s_w_primary, w_current[WPN.sprite_frame_index], 
-    x + lengthdir_x(global.wpn_carry_offset[w_current[WPN.carry]], image_angle), 
-    y + lengthdir_y(global.wpn_carry_offset[w_current[WPN.carry]], image_angle),
+    s_w_primary, w_current[GUN.sprite_frame_index], 
+    x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]], image_angle), 
+    y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
     1, 1, image_angle, c_white, 1,
 );
 </string>

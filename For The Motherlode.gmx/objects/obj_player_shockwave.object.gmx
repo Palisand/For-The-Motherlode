@@ -3,7 +3,7 @@
   <spriteName>&lt;undefined&gt;</spriteName>
   <solid>0</solid>
   <visible>-1</visible>
-  <depth>-999</depth>
+  <depth>0</depth>
   <persistent>0</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
@@ -25,32 +25,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>x = mouse_x;
-y = mouse_y;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="3" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>x = mouse_x;
-y = mouse_y;
+            <string>image_speed = 0.15;
+x = view_wview[0]/2;
+y = 544;
+var_sprite_width = sprite_get_width(spr_walk);
+var_sprite_height = sprite_get_height(spr_walk);
 </string>
           </argument>
         </arguments>
@@ -73,17 +52,20 @@ y = mouse_y;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_circle_precision(64);
-draw_set_colour(c_white);
-draw_circle(x, y, 2, false);
-//draw_circle(o_player.x, o_player.y, distance_to_point(o_player.x, o_player.y), true);
+            <string>con = obj_controller_shockwave;
 
-if (o_player.w_current[GUN.action] == GUN_ACTION.single_shot) {
-    draw_annulus(
-        x, y, 5, 8, o_player.image_angle, 
-        o_player.image_angle + 360 * ((o_player.alarm[0] + 1) / o_player.shoot_delay), 0
-    );
-}
+var_mouse_pos_x = mouse_x - (x-(var_sprite_width/2));
+var_mouse_pos_y = mouse_y - (y-(var_sprite_height/2));
+
+if con.shader_enabled and !con.full_screen_effect and con.shock_enabled shader_set(shd_shockwave);
+    shader_set_uniform_f(con.uni_time, con.var_time_var);
+    shader_set_uniform_f(con.uni_mouse_pos, var_mouse_pos_x, var_mouse_pos_y);
+    shader_set_uniform_f(con.uni_resolution, var_sprite_width, var_sprite_height);
+    shader_set_uniform_f(con.uni_shock_amplitude, con.var_shock_amplitude);
+    shader_set_uniform_f(con.uni_shock_refraction, con.var_shock_refraction );
+    shader_set_uniform_f(con.uni_shock_width, con.var_shock_width);
+    draw_sprite(spr_walk,image_index,x,y);
+shader_reset();
 </string>
           </argument>
         </arguments>
@@ -101,5 +83,8 @@ if (o_player.w_current[GUN.action] == GUN_ACTION.single_shot) {
   <PhysicsObjectFriction>0.200000002980232</PhysicsObjectFriction>
   <PhysicsObjectAwake>-1</PhysicsObjectAwake>
   <PhysicsObjectKinematic>0</PhysicsObjectKinematic>
-  <PhysicsShapePoints/>
+  <PhysicsShapePoints>
+    <point>0,0</point>
+    <point>64,64</point>
+  </PhysicsShapePoints>
 </object>
