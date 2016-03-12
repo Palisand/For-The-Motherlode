@@ -25,8 +25,17 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>x = mouse_x;
-y = mouse_y;
+            <string>draw_set_circle_precision(64);
+draw_set_colour(c_white);
+draw_circle(x, y, 2, false);
+//draw_circle(o_player.x, o_player.y, distance_to_point(o_player.x, o_player.y), true);
+
+if (o_player.gun_current[GUN.action] == GUN_ACTION.single_shot) {
+    draw_annulus(
+        x, y, 6, 8, o_player.image_angle, 
+        o_player.image_angle + 360 * ((o_player.alarm[0] + 1) / o_player.gun_current[GUN.shoot_delay]), 0
+    );
+}
 </string>
           </argument>
         </arguments>
@@ -78,10 +87,10 @@ draw_set_colour(c_white);
 draw_circle(x, y, 2, false);
 //draw_circle(o_player.x, o_player.y, distance_to_point(o_player.x, o_player.y), true);
 
-if (o_player.w_current[GUN.action] == GUN_ACTION.single_shot) {
+if (o_player.gun_current[GUN.action] == GUN_ACTION.single_shot) {
     draw_annulus(
-        x, y, 5, 8, o_player.image_angle, 
-        o_player.image_angle + 360 * ((o_player.alarm[0] + 1) / o_player.shoot_delay), 0
+        x, y, 6, 8, o_player.image_angle, 
+        o_player.image_angle + 360 * ((o_player.alarm[0] + 1) / o_player.gun_current[GUN.shoot_delay]), 0
     );
 }
 </string>

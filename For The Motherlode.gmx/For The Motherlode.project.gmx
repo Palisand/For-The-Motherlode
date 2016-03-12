@@ -33,6 +33,7 @@
     <sound>sound\snd_stab</sound>
     <sound>sound\snd_blood_hit</sound>
     <sound>sound\snd_blood_splat</sound>
+    <sound>sound\snd_footstep</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="Human">
@@ -133,11 +134,15 @@
       </scripts>
       <script>scripts\muzzle_flash.gml</script>
       <script>scripts\blood_hit.gml</script>
+      <script>scripts\blood_hit_screen.gml</script>
       <script>scripts\shake_screen.gml</script>
       <script>scripts\draw_blood.gml</script>
       <script>scripts\draw_annulus.gml</script>
+      <script>scripts\handle_human_leg_anim.gml</script>
+      <script>scripts\draw_footprints.gml</script>
     </scripts>
     <script>scripts\huder_SmoothNoise.gml</script>
+    <script>scripts\shoot.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\alpha_clipping.shader</shader>
@@ -149,6 +154,9 @@
       <object>objects\o_globals</object>
       <object>objects\o_handler</object>
       <object>objects\o_camera</object>
+      <object>objects\o_hud</object>
+      <object>objects\o_fov</object>
+      <object>objects\o_dmg_indicator</object>
       <object>objects\o_crosshair</object>
       <object>objects\o_motherlode</object>
       <object>objects\o_player</object>

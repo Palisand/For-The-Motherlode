@@ -28,7 +28,10 @@
             <string>/// Attributes
 
 force = 0;
+damage = 0;
 enemy_collision = false;
+target = o_enemy;
+source = 0;
 </string>
           </argument>
         </arguments>
@@ -104,7 +107,7 @@ with (trail_shadow) {
           <argument>
             <kind>1</kind>
             <string>/// Shockwave
-
+/*
 instance_create(x, y, o_shockwave);
 </string>
           </argument>
@@ -130,7 +133,7 @@ instance_create(x, y, o_shockwave);
             <kind>1</kind>
             <string>/// Collision
 
-var enemy = collision_line(xprevious, yprevious, x, y, o_enemy, false, true)
+var enemy = collision_line(xprevious, yprevious, x, y, target, false, true)
 if (enemy) {
     enemy_collision = true;
     var xx = x + lengthdir_x(distance_to_object(enemy), direction - 180);
@@ -142,12 +145,21 @@ if (enemy) {
     x = xx;
     y = yy;
     blood_hit(xx, yy, 30, enemy.blood_emitter.p_emitter, enemy.blood_emitter.p_type);
-    enemy.hhealth -= 5;
+    enemy.hhealth -= damage;
     if (enemy.hhealth &gt; 0) {  // play death sound otherwise
         audio_play_sound_at(snd_blood_hit, xx, yy, 0, 0, 0, 0, false, 0);
         audio_sound_pitch(snd_blood_hit, random_range(0.8, 1));
     }
     enemy.proj_pushback = force;
+    
+    if (target == o_player) {
+        with (instance_create(0, 0, o_dmg_indicator)) {
+            alpha += 0.5;
+            source_x = other.source.x;
+            source_y = other.source.y;
+        }
+        shake_screen(force, 10);
+    }
 }
 </string>
           </argument>

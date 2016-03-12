@@ -11,7 +11,7 @@ var p_type = argument7;
 
 var spread = random_range(spread_min, spread_max);
 
-part_system_depth(global.p_sys, -2500);
+part_system_depth(global.p_sys, -98);
 part_type_shape(p_type, pt_shape_square);
 part_type_blend(p_type, true);
 part_type_alpha3(p_type, 1, 0.50, 0);

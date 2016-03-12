@@ -29,17 +29,22 @@
 
 instance_create(0, 0, o_globals);
 instance_create(0, 0, o_player);
+instance_create(0, 0, o_hud);
 instance_create(mouse_x, mouse_y, o_crosshair);
 instance_create(0, 0, o_camera);
+instance_create(0, 0, o_fov);
 instance_create(room_width/2, room_height/2, o_motherlode);
 
-instance_create(room_width/2, room_height/2, o_enemy);
-repeat(10000)
-    draw_blood(random(room_width), random(room_height));
-    
-/*
-repeat(10)
-    instance_create(random(room_width), random(room_height), o_stabber);
+instance_create(random(room_width), random(room_height), o_shooter);
+
+repeat(5) {
+    var dir = random(360);
+    instance_create(
+        room_width/2 + lengthdir_x(room_width/2, dir), 
+        room_height/2 + lengthdir_y(room_height/2, dir), 
+        o_stabber
+    );
+}
 
 
 // Terrain
@@ -244,7 +249,7 @@ draw_sprite_ext(s_terrain_2, 0, 0, 0, 1, 1, 0, c_terrain_brown, 1);
             <kind>1</kind>
             <string>/// Surface
 
-draw_surface(global.surf, 0, 0);
+draw_surface(global.surf, -global.surf_offset, -global.surf_offset);
 </string>
           </argument>
         </arguments>

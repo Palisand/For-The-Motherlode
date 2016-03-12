@@ -28,9 +28,12 @@
             <string>/// General
 
 global.p_sys = part_system_create();
-global.surf = surface_create(room_width, room_height);
-
+global.surf_edge_buffer = 50;
+global.surf_offset = global.surf_edge_buffer / 2;
+global.surf = surface_create(room_width + global.surf_edge_buffer, room_height + global.surf_edge_buffer);
 global.barrier_radius = room_width/2 - 100;
+
+global.c_healthy_green = make_colour_hsv(90, 255, 160);
 </string>
           </argument>
         </arguments>
@@ -128,7 +131,9 @@ enum GUN {
     proj_speed,
     proj_amount,
     proj_force,
+    proj_type,
     ammo_type,  // determines casing
+    shoot_delay,
     sprite_frame_index,
     muzzle_offset,  // pixel distance from sprite center to weapon muzzle
     sound_fire,
@@ -184,34 +189,63 @@ global.gun_carry_offset[GUN_CARRY.double] = 14;
 // Pistol
 arr_pistol[ITEM_ATTR.type] = ITEM_TYPE.gun;
 arr_pistol[GUN.name] = "Pathetic Pistol";
+arr_pistol[GUN.description] = "A pathetic pistol for a pathetic player... at least it has infinite ammo."
 arr_pistol[GUN.action] = GUN_ACTION.semi_auto;
 arr_pistol[GUN.carry] = GUN_CARRY.single;
-arr_pistol[GUN.damage] = 6;
+arr_pistol[GUN.damage] = 5;
 arr_pistol[GUN.range] = 500;
-arr_pistol[GUN.spread] = 10;
+arr_pistol[GUN.spread] = 3;
 arr_pistol[GUN.proj_speed] = 50;
 arr_pistol[GUN.proj_amount] = 1;
 arr_pistol[GUN.proj_force] = 5;
+arr_pistol[GUN.proj_type] = o_bullet;
 arr_pistol[GUN.ammo_type] = GUN_AMMO.small_round;
+arr_pistol[GUN.shoot_delay] = 0;
 arr_pistol[GUN.sprite_frame_index] = 0;
 arr_pistol[GUN.muzzle_offset] = 8;
 arr_pistol[GUN.sound_fire] = snd_pistol_fire;
+//arr_pistol[GUN.sound_equip] = 
 global.items[ITEM.pistol] = arr_pistol;
 // Revolver
 arr_revolver[ITEM_ATTR.type] = ITEM_TYPE.gun;
 arr_revolver[GUN.name] = "Revolver";
-arr_revolver[GUN.action] = GUN_ACTION.automatic;
+arr_revolver[GUN.description] = "Like them cowboys had."
+arr_revolver[GUN.action] = GUN_ACTION.single_shot;  // just for testing (should be semi-auto, with 0 shoot_delay)
 arr_revolver[GUN.carry] = GUN_CARRY.single;
-arr_revolver[GUN.damage] = 6;
+arr_revolver[GUN.damage] = 12;
 arr_revolver[GUN.range] = 1000;
-arr_revolver[GUN.spread] = 10;
+arr_revolver[GUN.spread] = 4;
 arr_revolver[GUN.proj_speed] = 50;
 arr_revolver[GUN.proj_amount] = 1;
 arr_revolver[GUN.proj_force] = 10;
+arr_revolver[GUN.proj_type] = o_bullet;
 arr_revolver[GUN.ammo_type] = GUN_AMMO.small_round;
+arr_revolver[GUN.shoot_delay] = 60;
 arr_revolver[GUN.sprite_frame_index] = 1;
 arr_revolver[GUN.muzzle_offset] = 10;
+arr_revolver[GUN.sound_fire] = snd_pistol_fire;
+//arr_revolver[GUN.sound_equip] = 
 global.items[ITEM.revolver] = arr_revolver;
+// SMG
+arr_smg[ITEM_ATTR.type] = ITEM_TYPE.gun;
+arr_smg[GUN.name] = "Submachine Gun";
+arr_smg[GUN.description] = "Also goes by spray n' pray."
+arr_smg[GUN.action] = GUN_ACTION.automatic;
+arr_smg[GUN.carry] = GUN_CARRY.single;
+arr_smg[GUN.damage] = 4;
+arr_smg[GUN.range] = 500;
+arr_smg[GUN.spread] = 10;
+arr_smg[GUN.proj_speed] = 50;
+arr_smg[GUN.proj_amount] = 1;
+arr_smg[GUN.proj_force] = 5;
+arr_smg[GUN.proj_type] = o_bullet;
+arr_smg[GUN.ammo_type] = GUN_AMMO.small_round;
+arr_smg[GUN.shoot_delay] = 5;
+arr_smg[GUN.sprite_frame_index] = 2;
+arr_smg[GUN.muzzle_offset] = 12;
+arr_smg[GUN.sound_fire] = snd_pistol_fire;
+//arr_smg[GUN.sound_equip] = 
+global.items[ITEM.smg] = arr_smg;
 </string>
           </argument>
         </arguments>

@@ -83,6 +83,8 @@ if (abs(rotate_speed) &gt; 0) {
 }
 else {
     surface_set_target(global.surf);
+    x += global.surf_offset;
+    y += global.surf_offset;
     draw_self();
     surface_reset_target();
     instance_destroy();

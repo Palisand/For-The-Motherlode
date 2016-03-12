@@ -49,9 +49,9 @@ stab_p_type = part_type_create();
 // Sprite stuff
 torso_y_scale = 1;
 walk_wave_t = 0;
-walk_wave_inc = 15;
+drawn_footprint = false;
 s_feet_image_index = 0;
-s_feet_image_xscale = 1;
+s_feet_image_yscale = 1;
 sprite_index = s_mask_human;
 
 // Blood
@@ -86,8 +86,33 @@ gib_threshold = 10;
             <kind>1</kind>
             <string>/// Cleanup
 
+blood_emitter.alarm[0] = room_speed;
 part_emitter_destroy(global.p_sys, stab_p_emitter);
 part_type_destroy(stab_p_type);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// drawn_footprint = true
+drawn_footprint = false;
 </string>
           </argument>
         </arguments>
@@ -113,32 +138,6 @@ part_type_destroy(stab_p_type);
             <string>/// can_stab = true;
 
 can_stab = true;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="3" enumb="2">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Blood emitter position
-
-blood_emitter.x = x;
-blood_emitter.y = y;
 </string>
           </argument>
         </arguments>
@@ -198,32 +197,7 @@ if (stab_time &gt; 0) {
 }
 
 // Feet
-var amplitude = sprite_get_number(s_feet) - 0.9;
-var wave_val = amplitude * sin(degtorad(walk_wave_t));
-s_feet_image_index = abs(wave_val);
-if (wave_val &lt; 0) {
-    s_feet_image_xscale = -1;
-}
-else {
-    s_feet_image_xscale = 1;
-}
-
-if (speed) {
-    walk_wave_t += walk_wave_inc/4 * speed; 
-}
-else {
-    if (abs(wave_val) &gt; 0.1) {
-        if (abs(wave_val) &lt; abs(amplitude * sin(degtorad(walk_wave_t + 1)))) {
-            walk_wave_t -= walk_wave_inc;
-        }
-        else if (abs(wave_val) &gt;= abs(amplitude * sin(degtorad(walk_wave_t + 1)))) {
-            walk_wave_t += walk_wave_inc;    
-        }
-    }
-    else {
-        walk_wave_t = 0;
-    }
-}
+handle_human_leg_anim(speed);
 
 </string>
           </argument>
@@ -257,6 +231,11 @@ if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, fals
     shake_screen(10, 10);
     has_stabbed = true;
     drawn_blood = false;
+    with (instance_create(0, 0, o_dmg_indicator)) {
+        alpha += 0.5;
+        source_x = other.x_stab;
+        source_y = other.y_stab;
+    }
 }
 </string>
           </argument>
@@ -302,8 +281,6 @@ if (total_health &lt;= 0) {
     audio_play_sound_at(snd_blood_splat, x, y, 0, 0, 0, 0, false, 1);
     audio_sound_pitch(snd_blood_splat, random_range(0.8, 1));
     blood_hit(x, y, 100, blood_emitter.p_emitter, blood_emitter.p_type);
-    // Set alarm for particle emitter / type destruction (1 second)
-    blood_emitter.alarm[0] = room_speed;
     instance_destroy();
 }
 </string>
@@ -359,7 +336,7 @@ y += 0.04 * (y - (other.y));
 // Feet
 draw_sprite_ext(
     s_feet, s_feet_image_index, x, y, 
-    s_feet_image_xscale, 1, direction, c_white, 1
+    1, s_feet_image_yscale, direction, c_white, 1
 );
 // Torso
 var torso_image_index;
@@ -383,6 +360,9 @@ draw_sprite_shadow_ext(
     270, 3, 1, 1, c_black, 0.5,
 );
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
+
+// Footprints
+draw_footprints();
 </string>
           </argument>
         </arguments>
@@ -403,33 +383,7 @@ draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Footprints
-if (s_feet_image_index &gt;= sprite_get_number(s_feet) - 1) {
-    surface_set_target(global.surf);
-    draw_sprite_ext(s_footprint, 0, x, y, 1, s_feet_image_xscale, direction, c_white, 0.3);
-    surface_reset_target();   
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Blood (on stab)
+            <string>/// Blood On Stab
 
 if (!drawn_blood) {
     draw_blood(x + lengthdir_x(10, image_angle), y + lengthdir_y(10, image_angle));
@@ -457,10 +411,9 @@ if (!drawn_blood) {
             <kind>1</kind>
             <string>/// Health
 
-var healthy_green = make_colour_hsv(90, 255, 160);// global
 draw_healthbar(
     x - 10, y - 20, x + 10, y - 18,
-    total_health, c_gray, c_red, healthy_green, 0, true, false
+    total_health, c_gray, c_red, global.c_healthy_green, 0, true, false
 );
 </string>
           </argument>

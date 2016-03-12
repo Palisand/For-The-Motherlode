@@ -29,6 +29,7 @@
 y = room_height/2;
 sprite_index = s_mask_human;
 
+hhealth = 9001;
 mass = 10;
 acceleration = 0.1;
 move_speed = 5;
@@ -36,8 +37,10 @@ move_speed = 5;
 can_shoot = true;
 shoot_delay = 6;
 
+// Particle Emitters
 muzzle_flash_p_emitter = part_emitter_create(global.p_sys);
 muzzle_flash_p_type = part_type_create();
+blood_emitter = instance_create(x, y, o_particle_emitter);
 
 // Audio
 audio_listener_position(x, y, 0);
@@ -54,18 +57,17 @@ mb_shoot = mb_left;
 // Sprite (Body)
 s_torso_current = s_torso_wpn;
 s_feet_image_index = 0;
-s_feet_image_xscale = 1;
+s_feet_image_yscale = 1;
 walk_wave_t = 0;
-walk_wave_inc = 4;
 drawn_footprint = false;
 
-// Weapon
-w_index = 0;
-w_inventory = ds_list_create();
-ds_list_add(w_inventory, ITEM.pistol);
-ds_list_add(w_inventory, ITEM.revolver);
-//ds_list_add(w_inventory, ITEM.smg);
-w_current = global.items[ds_list_find_value(w_inventory, w_index)];
+// Gun
+gun_index = 0;
+gun_inventory = ds_list_create();
+ds_list_add(gun_inventory, ITEM.pistol);
+ds_list_add(gun_inventory, ITEM.revolver);
+ds_list_add(gun_inventory, ITEM.smg);
+gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 </string>
           </argument>
         </arguments>
@@ -90,6 +92,7 @@ w_current = global.items[ds_list_find_value(w_inventory, w_index)];
             <kind>1</kind>
             <string>/// Cleanup
 
+blood_emitter.alarm[0] = room_speed;
 part_emitter_destroy(global.p_sys, muzzle_flash_p_emitter);
 part_type_destroy(muzzle_flash_p_type);
 </string>
@@ -164,66 +167,26 @@ can_shoot = true;
             <kind>1</kind>
             <string>/// Shooting
 
-/*
-switch (w_current[GUN.action]) {
+switch (gun_current[GUN.action]) {
     case GUN_ACTION.semi_auto:
         if (mouse_check_button_pressed(mb_shoot)) {
+            shoot(gun_current, o_enemy);
         }
         break;
     case GUN_ACTION.automatic:
         if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
+            shoot(gun_current, o_enemy);
+            can_shoot = false;
+            alarm[0] = gun_current[GUN.shoot_delay];
         }
         break;
     case GUN_ACTION.single_shot:
         if (mouse_check_button_pressed(mb_shoot) &amp;&amp; can_shoot) {
+            shoot(gun_current, o_enemy);
+            can_shoot = false;
+            alarm[0] = gun_current[GUN.shoot_delay];
         }
         break;
-}
-*/
-
-var spread = 0;
-if (mouse_check_button(mb_shoot) &amp;&amp; can_shoot) {
-    audio_play_sound(w_current[GUN.sound_fire], 0, false);
-    audio_sound_pitch(w_current[GUN.sound_fire], random_range(0.9, 1.1));
-    //repeat(5) {
-        with(
-            instance_create(
-                x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
-                y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
-                o_bullet
-            )
-        ) {
-            speed = 50;// + random_range(-3, 3);  // GUN.proj_speed (missiles have acceleration though)
-            direction = other.image_angle + random_range(-spread/2, spread/2); // GUN.spread
-            image_angle = direction;
-            // damage = wpn_current[GUN.damage];
-            force = other.w_current[GUN.proj_force];
-        }
-    //}
-    
-    with (
-        instance_create(
-            x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
-            y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
-            o_casing
-        )
-    ) {
-        image_angle = other.image_angle;
-        direction = other.image_angle - 90 + random_range(-45, 45);
-        speed = random_range(3, 5);
-        image_index = 0;  // ammo_type?
-    }
-    
-    muzzle_flash(
-        x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
-        y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]] + w_current[GUN.muzzle_offset], image_angle),
-        4, 0, 32, image_angle, muzzle_flash_p_emitter, muzzle_flash_p_type
-    );
-
-    shake_screen(6, 10);
-    
-    can_shoot = false;
-    alarm[0] = shoot_delay;
 }
 </string>
           </argument>
@@ -293,35 +256,7 @@ else if (!move_right &amp;&amp; !move_left) {
     hspeed = lerp(hspeed, 0, acceleration);
 }
 
-// Handle feet sprite (make into script, get_src_vars())
-var amplitude = sprite_get_number(s_feet) - 0.9;
-var wave_val = amplitude * sin(degtorad(walk_wave_t));
-s_feet_image_index = abs(wave_val);
-// set image x-scale
-if (wave_val &lt; 0) {
-    s_feet_image_xscale = -1;
-}
-else {
-    s_feet_image_xscale = 1;
-}
-// animate
-if (move_up || move_down || move_left || move_right) {
-    walk_wave_t += walk_wave_inc * speed; 
-}
-else {
-    // smoothly return to first image index (walk_wave_t = 0 ~ wave_val = 0);
-    if (abs(wave_val) &gt; 0.1) {
-        if (abs(wave_val) &lt; abs(amplitude * sin(degtorad(walk_wave_t + 1)))) {
-            walk_wave_t -= walk_wave_inc;
-        }
-        else if (abs(wave_val) &gt;= abs(amplitude * sin(degtorad(walk_wave_t + 1)))) {
-            walk_wave_t += walk_wave_inc;    
-        }
-    }
-    else {
-        walk_wave_t = 0;
-    }
-}
+handle_human_leg_anim(move_up || move_down || move_left || move_right);
 
 // - Gamepad -
 </string>
@@ -383,15 +318,15 @@ if (diff &lt; 0) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// (Dev) Weapon Swap
+            <string>/// Weapon Swap
 
-if (mouse_wheel_up() &amp;&amp; w_index &lt; ds_list_size(w_inventory) - 1) {
-    w_index++;
-    w_current = global.items[ds_list_find_value(w_inventory, w_index)];
+if (mouse_wheel_up() &amp;&amp; gun_index &lt; ds_list_size(gun_inventory) - 1) {
+    gun_index++;
+    gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 }
-if (mouse_wheel_down() &amp;&amp; w_index &gt; 0) {
-    w_index--;
-    w_current = global.items[ds_list_find_value(w_inventory, w_index)];
+if (mouse_wheel_down() &amp;&amp; gun_index &gt; 0) {
+    gun_index--;
+    gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 }
 </string>
           </argument>
@@ -463,23 +398,23 @@ while (place_meeting(x, y, other)) {
 // Feet
 draw_sprite_ext(
     s_feet, s_feet_image_index, x, y, 
-    s_feet_image_xscale, 1, direction, c_white, 1
+    1, s_feet_image_yscale, direction, c_white, 1
 );
 // Torso (shadow)
 draw_sprite_shadow_ext(
-    s_torso_current, w_current[GUN.carry], x, y, image_angle,
+    s_torso_current, gun_current[GUN.carry], x, y, image_angle,
     270, 5, 1, 1, c_black, 0.5
 );
 // Weapon (shadow)
 draw_sprite_shadow_ext(
-    s_w_primary, w_current[GUN.sprite_frame_index],
-    x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]], image_angle), 
-    y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
+    s_w_primary, gun_current[GUN.sprite_frame_index],
+    x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
+    y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
     image_angle,
     270, 5, 1, 1, c_black, 0.5
 );
 // Torso (sprite)
-draw_sprite_ext(s_torso_current, w_current[GUN.carry], x, y, 1, 1, image_angle, c_white, 1);
+draw_sprite_ext(s_torso_current, gun_current[GUN.carry], x, y, 1, 1, image_angle, c_white, 1);
 // Head
 draw_sprite_shadow_ext(
     s_plr_head, 0, x, y, image_angle,
@@ -488,11 +423,14 @@ draw_sprite_shadow_ext(
 draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
 // Weapon (sprite)
 draw_sprite_ext(
-    s_w_primary, w_current[GUN.sprite_frame_index], 
-    x + lengthdir_x(global.gun_carry_offset[w_current[GUN.carry]], image_angle), 
-    y + lengthdir_y(global.gun_carry_offset[w_current[GUN.carry]], image_angle),
+    s_w_primary, gun_current[GUN.sprite_frame_index], 
+    x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
+    y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
     1, 1, image_angle, c_white, 1,
 );
+
+// Footprints
+draw_footprints();
 </string>
           </argument>
         </arguments>
@@ -536,36 +474,6 @@ draw_line_width(
 );
 draw_set_alpha(1);
 
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Footprints
-
-// script too
-if (!drawn_footprint &amp;&amp; round(s_feet_image_index) == sprite_get_number(s_feet) - 1) {
-    surface_set_target(global.surf);
-    draw_sprite_ext(s_footprint, 0, x, y, 1, s_feet_image_xscale, direction, c_white, 0.3);
-    surface_reset_target();
-    drawn_footprint = true;
-    alarm[1] = walk_wave_inc * 2;
-}
 </string>
           </argument>
         </arguments>

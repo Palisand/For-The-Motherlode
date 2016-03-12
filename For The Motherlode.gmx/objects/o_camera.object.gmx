@@ -77,25 +77,15 @@ shaking = false;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Dynamic
-
-var x_to, y_to;
-
-//move_towards_point(mouse_x, mouse_y, 0);
-direction = point_direction(x, y, mouse_x, mouse_y);
-
-x_to = o_player.x + lengthdir_x(min(room_width/4, distance_to_point(mouse_x, mouse_y)), direction);
-y_to = o_player.y + lengthdir_y(min(room_height/4, distance_to_point(mouse_x, mouse_y)), direction);
-
-var trans_damp_val = 10;
-x += (x_to - x) / trans_damp_val;
-y += (y_to - y) / trans_damp_val;
-
-view_xview = -(view_wview/2) + x;
-view_yview = -(view_hview/2) + y;
-
-view_xview = clamp(view_xview, 0, room_width - view_wview);
-view_yview = clamp(view_yview, 0, room_height - view_hview);
+            <string>/// Zoom
+if (mouse_check_button(mb_right)) {
+    view_wview = 512;
+    view_hview = 512;
+}
+else {
+    view_wview = 1024;
+    view_hview = 1024;
+}
 </string>
           </argument>
         </arguments>
@@ -116,15 +106,25 @@ view_yview = clamp(view_yview, 0, room_height - view_hview);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Zoom
-if (mouse_check_button(mb_right)) {
-    view_wview = 512;
-    view_hview = 512;
-}
-else {
-    view_wview = 1024;
-    view_hview = 1024;
-}
+            <string>/// Dynamic
+
+var x_to, y_to;
+
+//move_towards_point(mouse_x, mouse_y, 0);
+direction = point_direction(x, y, mouse_x, mouse_y);
+
+x_to = o_player.x + lengthdir_x(min(room_width/4, distance_to_point(mouse_x, mouse_y)), direction);
+y_to = o_player.y + lengthdir_y(min(room_height/4, distance_to_point(mouse_x, mouse_y)), direction);
+
+var trans_damp_val = 10;
+x += (x_to - x) / trans_damp_val;
+y += (y_to - y) / trans_damp_val;
+
+view_xview = -(view_wview/2) + x;
+view_yview = -(view_hview/2) + y;
+
+view_xview = clamp(view_xview, 0, room_width - view_wview);
+view_yview = clamp(view_yview, 0, room_height - view_hview);
 </string>
           </argument>
         </arguments>

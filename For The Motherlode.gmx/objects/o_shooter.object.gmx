@@ -31,9 +31,67 @@ random_move_dir = 0;
 random_move_time = 0;
 personal_space = random_range(200, 300);
 retreat_dir_set = false;
-w_current = global.items[item.pistol];
+gun_current = global.items[ITEM.smg];
 
 shoot_ready = false;
+can_shoot = true;
+
+// Particle Emitters and Types
+muzzle_flash_p_emitter = part_emitter_create(global.p_sys);
+muzzle_flash_p_type = part_type_create();
+blood_emitter = instance_create(x, y, o_particle_emitter);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="1" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Cleanup
+
+blood_emitter.alarm[0] = room_speed;
+part_emitter_destroy(global.p_sys, muzzle_flash_p_emitter);
+part_type_destroy(muzzle_flash_p_type);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// can_shoot = true
+
+can_shoot = true;
 </string>
           </argument>
         </arguments>
@@ -67,6 +125,53 @@ random_move_dir = choose(90, -90);
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Shooting
+
+switch (gun_current[GUN.action]) {
+    case GUN_ACTION.semi_auto:
+        if (shoot_ready &amp;&amp; can_shoot) {
+            shoot(gun_current, o_player);
+            can_shoot = false;
+            alarm[1] = choose(random(10), random_range(30, 60));
+        }
+        break;
+    case GUN_ACTION.automatic:
+        if (shoot_ready &amp;&amp; can_shoot) {
+            shoot(gun_current, o_player);
+            can_shoot = false;
+            alarm[1] = set_chance(90, gun_current[GUN.shoot_delay], random_range(30, 60));
+        }
+        break;
+    case GUN_ACTION.single_shot:
+        if (shoot_ready &amp;&amp; can_shoot) {
+            shoot(gun_current, o_player);
+            can_shoot = false;
+            alarm[1] = random_range(gun_current[GUN.shoot_delay], gun_current[GUN.shoot_delay] + 60);
+        }
+        break;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -86,17 +191,20 @@ random_move_dir = choose(90, -90);
             <kind>1</kind>
             <string>/// Movement
 
+// Orientation
+image_angle = point_direction(x, y, o_player.x, o_player.y);
+
 var dist_to_plr = distance_to_point(o_player.x, o_player.y);
 // Move towards player if not within effective weapon range
-if (dist_to_plr &gt; w_current[weapon.range]) {
+if (dist_to_plr &gt; gun_current[GUN.range]) {
     shoot_ready = false;
     alarm[0] = -1;
     speed = lerp(speed, move_speed, acceleration);
     move_towards_point(o_player.x, o_player.y, speed);
 }
-// Move away from player if too close
+// Move away from player if too close (don't stop shooting though)
 else if (dist_to_plr &lt; personal_space) {
-    shoot_ready = false;
+    shoot_ready = true;
     alarm[0] = -1;
     if !(retreat_dir_set) {
         direction = random_range(45, -45) + point_direction(x, y, o_player.x, o_player.y) + 180;
@@ -104,14 +212,14 @@ else if (dist_to_plr &lt; personal_space) {
     }
     speed = lerp(speed, move_speed, acceleration);
 }
-// Stop moving, or move randomly
+// Stop moving, or move randomly IF NEAR PLAYER
 else {
     shoot_ready = true;
     retreat_dir_set = false;
     if (random_move_time &lt;= 0 &amp;&amp; alarm[0] == -1) {
-        //alarm[0] = random_range(100, 200);
+        alarm[0] = random_range(100, 200);
     }
-    speed = lerp(speed, 0, acceleration);;
+    speed = lerp(speed, 0, acceleration);
 }
 
 if (random_move_time &gt; 0) {
