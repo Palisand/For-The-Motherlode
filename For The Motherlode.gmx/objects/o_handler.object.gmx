@@ -35,14 +35,20 @@ instance_create(0, 0, o_camera);
 instance_create(0, 0, o_fov);
 instance_create(room_width/2, room_height/2, o_motherlode);
 
-instance_create(random(room_width), random(room_height), o_shooter);
-
 repeat(5) {
     var dir = random(360);
     instance_create(
         room_width/2 + lengthdir_x(room_width/2, dir), 
         room_height/2 + lengthdir_y(room_height/2, dir), 
         o_stabber
+    );
+}
+repeat(3) {
+    var dir = random(360);
+    instance_create(
+        room_width/2 + lengthdir_x(room_width/2, dir), 
+        room_height/2 + lengthdir_y(room_height/2, dir), 
+        o_shooter
     );
 }
 
@@ -173,7 +179,10 @@ if (keyboard_check_pressed(vk_enter)) {
           <argument>
             <kind>1</kind>
             <string>/// FPS
-draw_text(0, 0, fps);
+draw_set_colour(c_white);
+draw_text(0, 0, "FPS: " + string(fps));
+draw_text(0, 20, "FPS (real): " + string(fps_real));
+draw_text(0, 40, "Instance Count: " + string(instance_count));
 </string>
           </argument>
         </arguments>

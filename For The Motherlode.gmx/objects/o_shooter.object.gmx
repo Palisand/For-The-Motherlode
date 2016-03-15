@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>0</persistent>
-  <parentName>&lt;undefined&gt;</parentName>
+  <parentName>o_enemy</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -25,21 +25,41 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>move_speed = 5;
+            <string>// Health
+max_health = 20; // * wave_level_multiplier
+hhealth = max_health;
+total_health = (hhealth / max_health) * 100;
+
+// Movement
+move_speed = 5;
 acceleration = 0.1;
+mass = 10;
 random_move_dir = 0;
 random_move_time = 0;
-personal_space = random_range(200, 300);
 retreat_dir_set = false;
-gun_current = global.items[ITEM.smg];
+personal_space = random_range(200, 300);
 
+// Gun stuff
+gun_current = global.items[choose(ITEM.pistol, ITEM.revolver, ITEM.smg)];
 shoot_ready = false;
 can_shoot = true;
+
+// Sprite stuff
+c_skin = get_skin_color();
+walk_wave_t = 0;
+drawn_footprint = false;
+s_feet_image_index = 0;
+s_feet_image_yscale = 1;
+sprite_index = s_mask_human;
 
 // Particle Emitters and Types
 muzzle_flash_p_emitter = part_emitter_create(global.p_sys);
 muzzle_flash_p_type = part_type_create();
 blood_emitter = instance_create(x, y, o_particle_emitter);
+
+// Other
+proj_pushback = 0;
+gib_threshold = 10;
 </string>
           </argument>
         </arguments>
@@ -72,7 +92,7 @@ part_type_destroy(muzzle_flash_p_type);
         </arguments>
       </action>
     </event>
-    <event eventtype="2" enumb="1">
+    <event eventtype="2" enumb="2">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -92,6 +112,31 @@ part_type_destroy(muzzle_flash_p_type);
             <string>/// can_shoot = true
 
 can_shoot = true;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="1">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// drawn_footprint = true
+
+drawn_footprint = true;
 </string>
           </argument>
         </arguments>
@@ -149,21 +194,21 @@ switch (gun_current[GUN.action]) {
         if (shoot_ready &amp;&amp; can_shoot) {
             shoot(gun_current, o_player);
             can_shoot = false;
-            alarm[1] = choose(random(10), random_range(30, 60));
+            alarm[2] = choose(random_range(10, 20), random_range(30, 60));
         }
         break;
     case GUN_ACTION.automatic:
         if (shoot_ready &amp;&amp; can_shoot) {
             shoot(gun_current, o_player);
             can_shoot = false;
-            alarm[1] = set_chance(90, gun_current[GUN.shoot_delay], random_range(30, 60));
+            alarm[2] = set_chance(90, gun_current[GUN.shoot_delay], random_range(30, 60));
         }
         break;
     case GUN_ACTION.single_shot:
         if (shoot_ready &amp;&amp; can_shoot) {
             shoot(gun_current, o_player);
             can_shoot = false;
-            alarm[1] = random_range(gun_current[GUN.shoot_delay], gun_current[GUN.shoot_delay] + 60);
+            alarm[2] = random_range(gun_current[GUN.shoot_delay], gun_current[GUN.shoot_delay] + 60);
         }
         break;
 }
@@ -229,6 +274,84 @@ if (random_move_time &gt; 0) {
 }
 
 // Strafe quickly if shot
+
+
+// Feet
+handle_human_leg_anim(speed);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Health &amp; Death
+
+total_health = (hhealth / max_health) * 100;
+
+if (total_health &lt;= 0) {
+    // goresplosion() script
+    var num_giblets = sprite_get_number(s_stab_gibs_1);
+    var gib_sprite = s_stab_gibs_1;
+    if (proj_pushback &gt;= gib_threshold) {
+        num_giblets = sprite_get_number(s_stab_gibs_2);
+        gib_sprite = s_stab_gibs_2;
+    }
+    for (var i = 0; i &lt; num_giblets; i++) {
+        with (instance_create(x, y, o_giblet)) {
+            c_skin = other.c_skin;
+            sprite_index = gib_sprite;
+            image_index = i;
+            speed = other.proj_pushback + random_range(-3, 3);
+            image_angle = other.image_angle;
+            direction = image_angle - 180 + random_range(-45, 45);
+            // Explode from center: (360 / num_giblets) * (i + 1);
+        }
+    }
+    audio_play_sound_at(snd_blood_splat, x, y, 0, 0, 0, 0, false, 1);
+    audio_sound_pitch(snd_blood_splat, random_range(0.8, 1));
+    blood_hit(x, y, 100, blood_emitter.p_emitter, blood_emitter.p_type);
+    instance_destroy();
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="o_collider">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Collisions
+
+x += 0.04 * (x - (other.x));
+y += 0.04 * (y - (other.y));
 </string>
           </argument>
         </arguments>
@@ -251,9 +374,76 @@ if (random_move_time &gt; 0) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_circle(x, y, 10, false);
+            <string>///Body
 
-//draw_text(x, y + 30, point_direction(x, y, o_player.x, o_player.y));
+// Feet
+draw_sprite_ext(
+    s_feet, s_feet_image_index, x, y, 
+    1, s_feet_image_yscale, direction, c_skin, 1
+);
+// Torso (shadow)
+draw_sprite_shadow_ext(
+    s_torso_wpn, gun_current[GUN.carry], x, y, image_angle,
+    270, 5, 1, 1, c_black, 0.5
+);
+// Weapon (shadow)
+draw_sprite_shadow_ext(
+    s_guns, gun_current[GUN.sprite_frame_index],
+    x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
+    y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
+    image_angle,
+    270, 5, 1, 1, c_black, 0.5
+);
+// Torso (sprite)
+draw_sprite_ext(s_torso_wpn, gun_current[GUN.carry], x, y, 1, 1, image_angle, c_skin, 1);
+// Head
+draw_sprite_shadow_ext(
+    s_plr_head, 0, x, y, image_angle,
+    270, 3, 1, 1, c_black, 0.5,
+);
+draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_skin, 1);
+// Eyes
+draw_sprite_ext(s_plr_head, 1, x, y, 1, 1, image_angle, c_white, 1);
+// Weapon (sprite)
+draw_sprite_ext(
+    s_guns, gun_current[GUN.sprite_frame_index], 
+    x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
+    y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
+    1, 1, image_angle, c_white, 1,
+);
+
+// Footprints
+draw_footprints();
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Stats
+
+// Weapon
+draw_sprite_ext(s_guns_hud, gun_current[GUN.sprite_frame_index], x, y + 30, 1, 1, 0, c_white, 0.5);
+
+// Health
+draw_healthbar(
+    x - 10, y - 20, x + 10, y - 18,
+    total_health, c_gray, c_red, global.c_healthy_green, 0, true, false
+);
 </string>
           </argument>
         </arguments>

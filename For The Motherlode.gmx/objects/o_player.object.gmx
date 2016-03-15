@@ -33,7 +33,9 @@ hhealth = 9001;
 mass = 10;
 acceleration = 0.1;
 move_speed = 5;
-
+dodge_speed = 250;
+dodge_recharge = 120;
+can_dodge = true;
 can_shoot = true;
 shoot_delay = 6;
 
@@ -51,10 +53,11 @@ key_up = ord("W");
 key_down = ord("S");
 key_left = ord("A");
 key_right = ord("D");
-key_reload = vk_space;
+key_dodge = vk_backspace;  // vk_space
 mb_shoot = mb_left;
 
 // Sprite (Body)
+c_skin = get_skin_color();
 s_torso_current = s_torso_wpn;
 s_feet_image_index = 0;
 s_feet_image_yscale = 1;
@@ -95,6 +98,31 @@ gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 blood_emitter.alarm[0] = room_speed;
 part_emitter_destroy(global.p_sys, muzzle_flash_p_emitter);
 part_type_destroy(muzzle_flash_p_type);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// can_dodge = true
+
+can_dodge = true;
 </string>
           </argument>
         </arguments>
@@ -218,7 +246,7 @@ audio_listener_position(x, y, 0);
 // Orientation
 image_angle = point_direction(x, y, o_crosshair.x, o_crosshair.y);
 
-// - Keyboard -
+// Keyboard -
 var move_up, move_down, move_left, move_right;
 var set_speed;
 
@@ -226,14 +254,34 @@ move_up = keyboard_check(key_up);
 move_down = keyboard_check(key_down);
 move_left = keyboard_check(key_left);
 move_right = keyboard_check(key_right);
+var moving = move_up || move_down || move_left || move_right;
+var moving_diagonally = (move_up &amp;&amp; move_left) || (move_up &amp;&amp; move_right) || (move_down &amp;&amp; move_left) || (move_down &amp;&amp; move_right);
 
 var set_speed;
-if ((move_up &amp;&amp; move_left) || (move_up &amp;&amp; move_right) || (move_down &amp;&amp; move_left) || (move_down &amp;&amp; move_right)) {
-    set_speed = cos(degtorad(45)) * move_speed;
+if (moving_diagonally) {
+    if (keyboard_check_pressed(key_dodge) &amp;&amp; can_dodge) {
+        set_speed = cos(degtorad(45)) * dodge_speed;
+    }
+    else {
+        set_speed = cos(degtorad(45)) * move_speed;
+    }
 }
 else {
-    set_speed = move_speed;
+    if (keyboard_check_pressed(key_dodge) &amp;&amp; can_dodge) {
+        set_speed = dodge_speed;
+    }
+    else {
+        set_speed = move_speed;
+    }
 }
+
+// Dodge Reset
+if (keyboard_check_pressed(key_dodge) &amp;&amp; can_dodge &amp;&amp; moving) {
+    can_dodge = false;
+    alarm[2] = dodge_recharge;
+}
+
+// - Keyboard
 
 // Horizontal Movement
 if (move_up &amp;&amp; ! move_down) {
@@ -256,7 +304,7 @@ else if (!move_right &amp;&amp; !move_left) {
     hspeed = lerp(hspeed, 0, acceleration);
 }
 
-handle_human_leg_anim(move_up || move_down || move_left || move_right);
+handle_human_leg_anim(moving);
 
 // - Gamepad -
 </string>
@@ -398,7 +446,7 @@ while (place_meeting(x, y, other)) {
 // Feet
 draw_sprite_ext(
     s_feet, s_feet_image_index, x, y, 
-    1, s_feet_image_yscale, direction, c_white, 1
+    1, s_feet_image_yscale, direction, c_skin, 1
 );
 // Torso (shadow)
 draw_sprite_shadow_ext(
@@ -407,23 +455,25 @@ draw_sprite_shadow_ext(
 );
 // Weapon (shadow)
 draw_sprite_shadow_ext(
-    s_w_primary, gun_current[GUN.sprite_frame_index],
+    s_guns, gun_current[GUN.sprite_frame_index],
     x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
     y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
     image_angle,
     270, 5, 1, 1, c_black, 0.5
 );
 // Torso (sprite)
-draw_sprite_ext(s_torso_current, gun_current[GUN.carry], x, y, 1, 1, image_angle, c_white, 1);
+draw_sprite_ext(s_torso_current, gun_current[GUN.carry], x, y, 1, 1, image_angle, c_skin, 1);
 // Head
 draw_sprite_shadow_ext(
     s_plr_head, 0, x, y, image_angle,
     270, 3, 1, 1, c_black, 0.5,
 );
-draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
+draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_skin, 1);
+// Eyes
+draw_sprite_ext(s_plr_head, 1, x, y, 1, 1, image_angle, c_white, 1);
 // Weapon (sprite)
 draw_sprite_ext(
-    s_w_primary, gun_current[GUN.sprite_frame_index], 
+    s_guns, gun_current[GUN.sprite_frame_index], 
     x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
     y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
     1, 1, image_angle, c_white, 1,
@@ -451,9 +501,9 @@ draw_footprints();
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Line Of Sight
+            <string>/// "Line" Of Sight
 
-var max_len = 200;
+var max_len = 300;
 var min_len = 100;
 var len = point_distance(x, y, o_crosshair.x, o_crosshair.y) * max_len / (room_width/4);
 if (len &lt; min_len) {
@@ -473,30 +523,6 @@ draw_line_width(
     2
 );
 draw_set_alpha(1);
-
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Instance count
-
-draw_text(x, y + 30, instance_count);
 
 </string>
           </argument>

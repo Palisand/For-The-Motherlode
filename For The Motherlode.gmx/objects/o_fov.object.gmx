@@ -25,7 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>fov = surface_create(room_width + global.surf_edge_buffer, room_height + global.surf_edge_buffer);
+            <string>range = 70; // increase with peripherine (120?)
+pointer_alpha = 0;
+fov = surface_create(room_width + global.surf_edge_buffer, room_height + global.surf_edge_buffer);
 </string>
           </argument>
         </arguments>
@@ -58,9 +60,9 @@ draw_set_blend_mode(bm_subtract);
 draw_annulus(
     global.surf_offset + o_player.x - lengthdir_x(radius, o_player.image_angle), 
     global.surf_offset + o_player.y - lengthdir_y(radius, o_player.image_angle), 
-    0, room_width, o_player.image_angle - 45, o_player.image_angle + 45, 0  // to 80 with peripherine
+    0, room_width, o_player.image_angle - range, o_player.image_angle + range, 0
 );
-draw_circle(global.surf_offset + o_player.x, global.surf_offset + o_player.y, radius, false);
+draw_circle(global.surf_offset + o_player.x, global.surf_offset + o_player.y, radius * 2, false);
 draw_set_alpha(1);
 draw_set_blend_mode(bm_normal);
 surface_reset_target();
@@ -71,6 +73,46 @@ if (surface_exists(fov)) {
 else {
     fov = surface_create(room_width + global.surf_offset, room_height + global.surf_offset);
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>o_player</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Pointer to Motherlode
+
+var dir = point_direction(x, y, o_motherlode.x, o_motherlode.y);
+var dist = point_distance(x, y, o_motherlode.x, o_motherlode.y);
+
+if (dist &gt; o_motherlode.radius * 2 &amp;&amp; abs(angle_difference(image_angle, dir)) &gt; o_fov.range) {
+    o_fov.pointer_alpha = lerp(o_fov.pointer_alpha, 1, 0.1);
+}
+else {
+    o_fov.pointer_alpha = lerp(o_fov.pointer_alpha, 0, 0.2);
+}
+
+draw_set_colour(c_ltgray);
+draw_set_alpha(o_fov.pointer_alpha);
+draw_line_width(
+    x + lengthdir_x(60, dir), y + lengthdir_y(60, dir),
+    x + lengthdir_x(80, dir), y + lengthdir_y(80, dir),
+    3
+);
+draw_set_alpha(1);
 </string>
           </argument>
         </arguments>

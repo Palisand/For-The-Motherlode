@@ -47,6 +47,7 @@ stab_p_emitter = part_emitter_create(global.p_sys);
 stab_p_type = part_type_create();
 
 // Sprite stuff
+c_skin = get_skin_color();
 torso_y_scale = 1;
 walk_wave_t = 0;
 drawn_footprint = false;
@@ -262,6 +263,7 @@ if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, fals
 total_health = (hhealth / max_health) * 100;
 
 if (total_health &lt;= 0) {
+    // goresplosion() script
     var num_giblets = sprite_get_number(s_stab_gibs_1);
     var gib_sprite = s_stab_gibs_1;
     if (proj_pushback &gt;= gib_threshold) {
@@ -270,6 +272,7 @@ if (total_health &lt;= 0) {
     }
     for (var i = 0; i &lt; num_giblets; i++) {
         with (instance_create(x, y, o_giblet)) {
+            c_skin = other.c_skin;
             sprite_index = gib_sprite;
             image_index = i;
             speed = other.proj_pushback + random_range(-3, 3);
@@ -336,12 +339,14 @@ y += 0.04 * (y - (other.y));
 // Feet
 draw_sprite_ext(
     s_feet, s_feet_image_index, x, y, 
-    1, s_feet_image_yscale, direction, c_white, 1
+    1, s_feet_image_yscale, direction, c_skin, 1
 );
 // Torso
 var torso_image_index;
 if (stab_time &gt; 0) {
     torso_image_index = 1;
+    // Knife
+    draw_sprite_ext(s_torso_stab, 2, x, y, 1, torso_y_scale, image_angle, c_white, 1);
 }
 else {
     torso_image_index = 0;
@@ -352,14 +357,16 @@ draw_sprite_shadow_ext(
 );
 draw_sprite_ext(
     s_torso_stab, torso_image_index, x, y, 
-    1, torso_y_scale, image_angle, c_white, 1
+    1, torso_y_scale, image_angle, c_skin, 1
 );
 // Head
 draw_sprite_shadow_ext(
     s_plr_head, 0, x, y, image_angle,
     270, 3, 1, 1, c_black, 0.5,
 );
-draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_white, 1);
+draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_skin, 1);
+// Eyes
+draw_sprite_ext(s_plr_head, 1, x, y, 1, 1, image_angle, c_white, 1);
 
 // Footprints
 draw_footprints();

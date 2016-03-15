@@ -4,7 +4,7 @@ var gun = argument0;
 var proj_target = argument1;
 
 if (id != o_player.id) {
-    audio_play_sound_at(gun[GUN.sound_fire], x, y, 0, 0, 0, 0, false, 0);
+    audio_play_sound_at(gun[GUN.sound_fire], x, y, 0, 100, 300, 1, false, 0);
 }
 else {
     audio_play_sound(gun[GUN.sound_fire], 0, false);

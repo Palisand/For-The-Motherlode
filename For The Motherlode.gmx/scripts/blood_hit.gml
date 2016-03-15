@@ -6,7 +6,7 @@ var min_part_amt = argument2;
 var p_emitter = argument3;
 var p_type = argument4;
 
-var c_blood_red = make_colour_hsv(0, 255, 140);
+var c_blood_red = make_colour_hsv(0, 255, 150);
 
 part_system_depth(global.p_sys, -98);
 part_type_shape(p_type, pt_shape_square);

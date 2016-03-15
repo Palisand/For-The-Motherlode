@@ -34,20 +34,21 @@
     <sound>sound\snd_blood_hit</sound>
     <sound>sound\snd_blood_splat</sound>
     <sound>sound\snd_footstep</sound>
+    <sound>sound\snd_bullet_hit</sound>
   </sounds>
   <sprites name="sprites">
     <sprites name="Human">
       <sprite>sprites\s_mask_human</sprite>
       <sprite>sprites\s_torso_wpn</sprite>
       <sprite>sprites\s_plr_head</sprite>
+      <sprite>sprites\s_torso_stab</sprite>
       <sprite>sprites\s_feet_disconnected</sprite>
       <sprite>sprites\s_feet</sprite>
-      <sprite>sprites\s_torso_stab</sprite>
       <sprite>sprites\s_stab_gibs_1</sprite>
       <sprite>sprites\s_stab_gibs_2</sprite>
-    </sprites>
-    <sprites name="Weapons">
-      <sprite>sprites\s_w_primary</sprite>
+      <sprite>sprites\s_guns</sprite>
+      <sprite>sprites\s_guns_hud</sprite>
+      <sprite>sprites\s_projectiles</sprite>
     </sprites>
     <sprites name="Imported">
       <sprite>sprites\s_cursor_firing</sprite>
@@ -72,9 +73,6 @@
       <sprite>sprites\s_crate</sprite>
       <sprite>sprites\s_sand_bags</sprite>
       <sprite>sprites\o_propane</sprite>
-    </sprites>
-    <sprites name="Projectiles">
-      <sprite>sprites\s_bullet</sprite>
     </sprites>
     <sprites name="FX">
       <sprite>sprites\s_casing</sprite>
@@ -143,6 +141,7 @@
     </scripts>
     <script>scripts\huder_SmoothNoise.gml</script>
     <script>scripts\shoot.gml</script>
+    <script>scripts\get_skin_color.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\alpha_clipping.shader</shader>
@@ -151,8 +150,8 @@
   </shaders>
   <objects name="objects">
     <objects name="Persistent">
-      <object>objects\o_globals</object>
       <object>objects\o_handler</object>
+      <object>objects\o_globals</object>
       <object>objects\o_camera</object>
       <object>objects\o_hud</object>
       <object>objects\o_fov</object>
@@ -161,8 +160,6 @@
       <object>objects\o_motherlode</object>
       <object>objects\o_player</object>
     </objects>
-    <object>objects\o_crate</object>
-    <object>objects\o_collider</object>
     <objects name="Enemies">
       <object>objects\o_enemy</object>
       <object>objects\o_shooter</object>
@@ -171,12 +168,16 @@
     <objects name="Projectiles">
       <object>objects\o_bullet</object>
       <object>objects\o_bullet_trail_shadow</object>
+      <object>objects\o_grenade</object>
     </objects>
     <objects name="FX">
       <object>objects\o_particle_emitter</object>
       <object>objects\o_giblet</object>
       <object>objects\o_casing</object>
+      <object>objects\o_damage_number</object>
     </objects>
+    <object>objects\o_crate</object>
+    <object>objects\o_collider</object>
     <objects name="Group_radial_blur">
       <object>objects\obj_controller_radial_blur</object>
       <object>objects\obj_player_radial_blur</object>

@@ -27,6 +27,7 @@
             <kind>1</kind>
             <string>image_speed = 0;
 rotate_speed = choose(-10, 10);
+c_skin = c_white;
 </string>
           </argument>
         </arguments>
@@ -78,14 +79,16 @@ if (abs(rotate_speed) &gt; 0) {
           <argument>
             <kind>1</kind>
             <string>if (speed &gt; 0) {
-    draw_blood(x, y);
-    draw_self();
+    if (percent_chance(60)) {
+        draw_blood(x, y);
+    }
+    draw_sprite_ext(sprite_index, image_index, x, y, 1, 1, image_angle, c_skin, 1);
 }
 else {
     surface_set_target(global.surf);
     x += global.surf_offset;
     y += global.surf_offset;
-    draw_self();
+    draw_sprite_ext(sprite_index, image_index, x, y, 1, 1, image_angle, c_skin, 1);
     surface_reset_target();
     instance_destroy();
 }
