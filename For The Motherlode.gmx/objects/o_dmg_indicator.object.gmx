@@ -54,7 +54,7 @@ source_y = 0;
     alpha = 1;
 }
 if (alpha &gt; 0) {
-    alpha -= 0.01;
+    alpha -= 0.005;
 }
 else {
     instance_destroy();

@@ -28,7 +28,14 @@
             <string>x = room_width/2;
 y = room_height/2;
 
-radius = 50;
+radius = 100;
+
+amt = 20;
+for (var i = 0; i &lt; amt; i++) {
+    dirs[i] = random(360);
+    lens[i] = choose(random(radius/2), random(radius));
+    rots[i] = random(360);
+}
 </string>
           </argument>
         </arguments>
@@ -51,8 +58,26 @@ radius = 50;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_circle_precision(64);
-draw_circle(x, y, radius, true);
+            <string>for (var i = 0; i &lt; amt; i++) {
+    draw_sprite_shadow_ext(
+        s_crate, 0,
+        x + lengthdir_x(lens[i], dirs[i]), 
+        y + lengthdir_y(lens[i], dirs[i]),
+        rots[i], 270, 5, 1, 1, c_black, 0.5
+    );
+    draw_sprite_ext(
+        s_crate, 0, 
+        x + lengthdir_x(lens[i], dirs[i]), 
+        y + lengthdir_y(lens[i], dirs[i]),
+        1, 1, rots[i], c_white, 1
+    );
+}
+
+draw_set_alpha(0.05);
+draw_set_colour(c_black);
+draw_circle_width(x, y, radius, 3, 64);
+draw_set_alpha(1);
+
 </string>
           </argument>
         </arguments>

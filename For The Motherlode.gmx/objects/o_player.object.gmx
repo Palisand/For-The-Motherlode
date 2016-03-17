@@ -443,6 +443,11 @@ while (place_meeting(x, y, other)) {
             <kind>1</kind>
             <string>/// Body &amp; Weapon
 
+draw_set_blend_mode(bm_add);
+draw_set_alpha(0.05);
+draw_circle_colour(x, y, 100, c_white, c_black, false);
+draw_set_blend_mode(bm_normal);
+
 // Feet
 draw_sprite_ext(
     s_feet, s_feet_image_index, x, y, 

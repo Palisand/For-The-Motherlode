@@ -27,6 +27,7 @@
     <extension index="1">extensions\Draw Trail</extension>
     <extension index="2">extensions\Free Shaders</extension>
     <extension index="3">extensions\Smooth Noise Generator</extension>
+    <extension index="4">extensions\Draw Circle Width</extension>
   </NewExtensions>
   <sounds name="sound">
     <sound>sound\snd_pistol_fire</sound>
@@ -142,6 +143,7 @@
     <script>scripts\huder_SmoothNoise.gml</script>
     <script>scripts\shoot.gml</script>
     <script>scripts\get_skin_color.gml</script>
+    <script>scripts\draw_circle_width.gml</script>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\alpha_clipping.shader</shader>
@@ -155,7 +157,6 @@
       <object>objects\o_camera</object>
       <object>objects\o_hud</object>
       <object>objects\o_fov</object>
-      <object>objects\o_dmg_indicator</object>
       <object>objects\o_crosshair</object>
       <object>objects\o_motherlode</object>
       <object>objects\o_player</object>
@@ -174,7 +175,8 @@
       <object>objects\o_particle_emitter</object>
       <object>objects\o_giblet</object>
       <object>objects\o_casing</object>
-      <object>objects\o_damage_number</object>
+      <object>objects\o_dmg_number</object>
+      <object>objects\o_dmg_indicator</object>
     </objects>
     <object>objects\o_crate</object>
     <object>objects\o_collider</object>

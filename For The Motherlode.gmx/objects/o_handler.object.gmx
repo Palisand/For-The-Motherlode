@@ -35,19 +35,20 @@ instance_create(0, 0, o_camera);
 instance_create(0, 0, o_fov);
 instance_create(room_width/2, room_height/2, o_motherlode);
 
-repeat(5) {
+var dist = room_width/2 + (cos(degtorad(45)) * (room_width/2));
+repeat(10) {
     var dir = random(360);
     instance_create(
-        room_width/2 + lengthdir_x(room_width/2, dir), 
-        room_height/2 + lengthdir_y(room_height/2, dir), 
+        room_width/2 + lengthdir_x(dist, dir), 
+        room_height/2 + lengthdir_y(dist, dir), 
         o_stabber
     );
-}
-repeat(3) {
+}/*
+repeat(1) {
     var dir = random(360);
     instance_create(
-        room_width/2 + lengthdir_x(room_width/2, dir), 
-        room_height/2 + lengthdir_y(room_height/2, dir), 
+        room_width/2 + lengthdir_x(dist, dir), 
+        room_height/2 + lengthdir_y(dist, dir), 
         o_shooter
     );
 }
@@ -281,15 +282,18 @@ draw_surface(global.surf, -global.surf_offset, -global.surf_offset);
             <kind>1</kind>
             <string>/// Grid &amp; Barrier
 
+draw_set_circle_precision(64);
+draw_set_colour(c_black);
+draw_set_alpha(0.1);
+draw_circle_width(room_width/2, room_height/2, global.barrier_radius, 10, 128);
+draw_set_alpha(1);
+
 /*
 for (var i = 0; i &lt; room_width; i += room_width / 5) {
     draw_line(i, 0, i, room_height);
     draw_line(0, i, room_width, i);
 }
 
-/*
-draw_set_circle_precision(64);
-draw_circle(room_width/2, room_height/2, global.barrier_radius, true);
 </string>
           </argument>
         </arguments>

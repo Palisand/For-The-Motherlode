@@ -164,7 +164,7 @@ if (enemy) {
     else {
         audio_play_sound(snd_bullet_hit, 1, false);
         audio_sound_pitch(snd_bullet_hit, random_range(0.8, 1));
-        with(instance_create(x, y, o_damage_number)) {
+        with(instance_create(x, y, o_dmg_number)) {
             value = other.damage;
         }
     }

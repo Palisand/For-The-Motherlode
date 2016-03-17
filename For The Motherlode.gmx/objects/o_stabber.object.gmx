@@ -112,7 +112,7 @@ part_type_destroy(stab_p_type);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// drawn_footprint = true
+            <string>/// drawn_footprint = false
 drawn_footprint = false;
 </string>
           </argument>
@@ -418,6 +418,19 @@ if (!drawn_blood) {
             <kind>1</kind>
             <string>/// Health
 
+draw_set_circle_precision(64);
+if (total_health &lt; 50) {
+    draw_set_colour(merge_colour(c_red, c_yellow, (total_health * 2) / 100));   
+}
+else {
+    draw_set_colour(merge_colour(c_yellow, global.c_healthy_green, ((total_health - 50) * 2) / 100));
+}
+draw_set_alpha(0.5);
+draw_circle(x, y, 20, 64);
+draw_set_alpha(1);
+draw_annulus(x, y, 19, 20, image_angle, image_angle - (360 * total_health)/100, 0);
+
+/*
 draw_healthbar(
     x - 10, y - 20, x + 10, y - 18,
     total_health, c_gray, c_red, global.c_healthy_green, 0, true, false
