@@ -36,6 +36,7 @@ instance_create(0, 0, o_fov);
 instance_create(room_width/2, room_height/2, o_motherlode);
 
 var dist = room_width/2 + (cos(degtorad(45)) * (room_width/2));
+/*
 repeat(10) {
     var dir = random(360);
     instance_create(
@@ -43,7 +44,8 @@ repeat(10) {
         room_height/2 + lengthdir_y(dist, dir), 
         o_stabber
     );
-}/*
+}*/
+
 repeat(1) {
     var dir = random(360);
     instance_create(

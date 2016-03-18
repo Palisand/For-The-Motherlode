@@ -27,7 +27,10 @@
             <kind>1</kind>
             <string>x = room_width/2;
 y = room_height/2;
-sprite_index = s_mask_human;
+draw_x = x;
+draw_y = y;
+kickback = 0;
+mask_index = sprite_duplicate(s_mask_human);
 
 hhealth = 9001;
 mass = 10;
@@ -98,6 +101,8 @@ gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 blood_emitter.alarm[0] = room_speed;
 part_emitter_destroy(global.p_sys, muzzle_flash_p_emitter);
 part_type_destroy(muzzle_flash_p_type);
+
+sprite_delete(mask_index);
 </string>
           </argument>
         </arguments>
@@ -177,6 +182,46 @@ can_shoot = true;
       </action>
     </event>
     <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Kickback
+
+sprite_set_offset(
+    mask_index, 
+    sprite_get_width(mask_index)/2 + kickback, 
+    sprite_get_height(mask_index)/2
+);
+
+draw_x = x;
+draw_y = y;
+
+draw_x += lengthdir_x(kickback, image_angle - 180);
+draw_y += lengthdir_y(kickback, image_angle - 180);
+
+if (kickback &gt; 0) {
+    kickback--;
+}
+else {
+    kickback = 0;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -443,6 +488,7 @@ while (place_meeting(x, y, other)) {
             <kind>1</kind>
             <string>/// Body &amp; Weapon
 
+// Glow
 draw_set_blend_mode(bm_add);
 draw_set_alpha(0.05);
 draw_circle_colour(x, y, 100, c_white, c_black, false);
@@ -450,37 +496,37 @@ draw_set_blend_mode(bm_normal);
 
 // Feet
 draw_sprite_ext(
-    s_feet, s_feet_image_index, x, y, 
+    s_feet, s_feet_image_index, draw_x, draw_y, 
     1, s_feet_image_yscale, direction, c_skin, 1
 );
 // Torso (shadow)
 draw_sprite_shadow_ext(
-    s_torso_current, gun_current[GUN.carry], x, y, image_angle,
+    s_torso_current, gun_current[GUN.carry], draw_x, draw_y, image_angle,
     270, 5, 1, 1, c_black, 0.5
 );
 // Weapon (shadow)
 draw_sprite_shadow_ext(
     s_guns, gun_current[GUN.sprite_frame_index],
-    x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
-    y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
+    draw_x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
+    draw_y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
     image_angle,
     270, 5, 1, 1, c_black, 0.5
 );
 // Torso (sprite)
-draw_sprite_ext(s_torso_current, gun_current[GUN.carry], x, y, 1, 1, image_angle, c_skin, 1);
+draw_sprite_ext(s_torso_current, gun_current[GUN.carry], draw_x, draw_y, 1, 1, image_angle, c_skin, 1);
 // Head
 draw_sprite_shadow_ext(
-    s_plr_head, 0, x, y, image_angle,
+    s_plr_head, 0, draw_x, draw_y, image_angle,
     270, 3, 1, 1, c_black, 0.5,
 );
-draw_sprite_ext(s_plr_head, 0, x, y, 1, 1, image_angle, c_skin, 1);
+draw_sprite_ext(s_plr_head, 0, draw_x, draw_y, 1, 1, image_angle, c_skin, 1);
 // Eyes
-draw_sprite_ext(s_plr_head, 1, x, y, 1, 1, image_angle, c_white, 1);
+draw_sprite_ext(s_plr_head, 1, draw_x, draw_y, 1, 1, image_angle, c_white, 1);
 // Weapon (sprite)
 draw_sprite_ext(
     s_guns, gun_current[GUN.sprite_frame_index], 
-    x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
-    y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
+    draw_x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
+    draw_y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
     1, 1, image_angle, c_white, 1,
 );
 

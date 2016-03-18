@@ -13,8 +13,8 @@ audio_sound_pitch(gun[GUN.sound_fire], random_range(0.9, 1.1));
 
 repeat (gun[GUN.proj_amount]) {
     with (instance_create(
-        x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
-        y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
+        draw_x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
+        draw_y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
         gun[GUN.proj_type]
     )) {
         target = proj_target;
@@ -30,8 +30,8 @@ repeat (gun[GUN.proj_amount]) {
 
 // if has_casing? or just use ammo_type
 with (instance_create(
-    x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]], image_angle),
-    y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]], image_angle),
+    draw_x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]], image_angle),
+    draw_y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]], image_angle),
     o_casing
 )) {
     image_angle = other.image_angle;
@@ -42,10 +42,14 @@ with (instance_create(
 
 // muzzle flash types?
 muzzle_flash(
-    x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
-    y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
+    draw_x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
+    draw_y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]] + gun[GUN.muzzle_offset], image_angle),
     4, 0, 32, image_angle, muzzle_flash_p_emitter, muzzle_flash_p_type
 );
+
+if (kickback < gun[GUN.kickback]) {
+    kickback = gun[GUN.kickback];
+}
 
 if (id == o_player.id) {
     shake_screen(gun[GUN.proj_force], 10);

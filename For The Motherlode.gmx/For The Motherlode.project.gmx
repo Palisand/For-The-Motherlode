@@ -84,6 +84,7 @@
   <backgrounds name="background"/>
   <paths name="paths"/>
   <scripts name="scripts">
+    <script>scripts\huder_SmoothNoise.gml</script>
     <scripts name="Essential Scripts">
       <scripts name="Drawing">
         <script>scripts\draw_text_outlined.gml</script>
@@ -140,10 +141,13 @@
       <script>scripts\handle_human_leg_anim.gml</script>
       <script>scripts\draw_footprints.gml</script>
     </scripts>
-    <script>scripts\huder_SmoothNoise.gml</script>
-    <script>scripts\shoot.gml</script>
-    <script>scripts\get_skin_color.gml</script>
-    <script>scripts\draw_circle_width.gml</script>
+    <scripts name="Action Specific">
+      <script>scripts\shoot.gml</script>
+    </scripts>
+    <scripts name="Drawing">
+      <script>scripts\draw_circle_width.gml</script>
+      <script>scripts\get_skin_color.gml</script>
+    </scripts>
   </scripts>
   <shaders name="shaders">
     <shader type="GLSLES">shaders\alpha_clipping.shader</shader>
