@@ -55,7 +55,7 @@ source = 0;
           <argument>
             <kind>1</kind>
             <string>///Create trail shadow
-
+/*
 trail_shadow = instance_create(
     x + lengthdir_x(5, 270), 
     y + lengthdir_y(5, 270), 
@@ -84,7 +84,7 @@ trail_shadow = instance_create(
           <argument>
             <kind>1</kind>
             <string>/// Destroy trail shadow
-
+/*
 with (trail_shadow) {
     instance_destroy();
 }
@@ -138,8 +138,12 @@ instance_create(x, y, o_shockwave);
 var enemy = collision_line(xprevious, yprevious, x, y, target, false, true)
 if (enemy) {
     enemy_collision = true;
-    var xx = x + lengthdir_x(distance_to_object(enemy), direction - 180);
-    var yy = y + lengthdir_y(distance_to_object(enemy), direction - 180);
+    var dist;
+    with (enemy) {
+        dist = distance_to_point(other.x, other.y);  // enemy bounding box edge to bullet coordinate
+    }
+    var xx = x + lengthdir_x(dist, direction - 180);
+    var yy = y + lengthdir_y(dist, direction - 180);
     while (place_meeting(xx, yy, enemy)) {
         xx += lengthdir_x(1, direction - 180);
         yy += lengthdir_y(1, direction - 180);
@@ -190,7 +194,7 @@ if (enemy) {
           <argument>
             <kind>1</kind>
             <string>/// Trail Shadow Position
-
+/*
 trail_shadow.x = x + lengthdir_x(5, 270);
 trail_shadow.y = y + lengthdir_y(5, 270);
 </string>
@@ -294,14 +298,13 @@ if (enemy_collision) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Self, Trail, &amp; Shadow
+            <string>/// Self &amp; Trail
 
-draw_sprite_shadow(270, 5, 1, c_black, 0.2);
-draw_trail(20, 4, c_orange, -1, true, 1);
+//draw_sprite_shadow(270, 5, 1, c_black, 0.2);
+draw_trail(15, 4, c_orange, -1, true, 1);
 draw_trail(10, 3, c_yellow, -1, true, 1);
 draw_trail(10, 2, c_white, -1, true, 1);
 // mess with colors, alpha, and trail length for different bullet effects
-// AND KEEP TRACK OF SHADOW!
 draw_self();
 </string>
           </argument>

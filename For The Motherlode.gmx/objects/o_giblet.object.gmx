@@ -26,7 +26,6 @@
           <argument>
             <kind>1</kind>
             <string>image_speed = 0;
-rotate_speed = choose(-10, 10);
 c_skin = c_white;
 </string>
           </argument>
@@ -50,12 +49,7 @@ c_skin = c_white;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>image_angle += rotate_speed;
-
-speed--;
-if (abs(rotate_speed) &gt; 0) {
-    rotate_speed += sign(rotate_speed) * 1;
-}
+            <string>speed--;
 </string>
           </argument>
         </arguments>
@@ -79,7 +73,7 @@ if (abs(rotate_speed) &gt; 0) {
           <argument>
             <kind>1</kind>
             <string>if (speed &gt; 0) {
-    if (percent_chance(60)) {
+    if (percent_chance(50)) {
         draw_blood(x, y);
     }
     draw_sprite_ext(sprite_index, image_index, x, y, 1, 1, image_angle, c_skin, 1);

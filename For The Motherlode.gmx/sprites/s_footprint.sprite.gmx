@@ -2,15 +2,15 @@
 <sprite>
   <type>0</type>
   <xorig>13</xorig>
-  <yorigin>6</yorigin>
+  <yorigin>4</yorigin>
   <colkind>0</colkind>
   <coltolerance>0</coltolerance>
   <sepmasks>-1</sepmasks>
   <bboxmode>0</bboxmode>
-  <bbox_left>19</bbox_left>
-  <bbox_right>25</bbox_right>
-  <bbox_top>8</bbox_top>
-  <bbox_bottom>11</bbox_bottom>
+  <bbox_left>3</bbox_left>
+  <bbox_right>9</bbox_right>
+  <bbox_top>4</bbox_top>
+  <bbox_bottom>7</bbox_bottom>
   <HTile>0</HTile>
   <VTile>0</VTile>
   <TextureGroups>
@@ -18,7 +18,7 @@
   </TextureGroups>
   <For3D>0</For3D>
   <width>26</width>
-  <height>12</height>
+  <height>8</height>
   <frames>
     <frame index="0">images\s_footprint_0.png</frame>
   </frames>

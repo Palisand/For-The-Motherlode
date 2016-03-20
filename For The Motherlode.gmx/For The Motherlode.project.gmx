@@ -47,13 +47,16 @@
       <sprite>sprites\s_feet</sprite>
       <sprite>sprites\s_stab_gibs_1</sprite>
       <sprite>sprites\s_stab_gibs_2</sprite>
+      <sprite>sprites\s_giblets</sprite>
+      <sprite>sprites\s_giblets_moar</sprite>
       <sprite>sprites\s_guns</sprite>
       <sprite>sprites\s_guns_hud</sprite>
       <sprite>sprites\s_projectiles</sprite>
+      <sprite>sprites\s_weapons</sprite>
     </sprites>
     <sprites name="Imported">
       <sprite>sprites\s_cursor_firing</sprite>
-      <sprite>sprites\s_giblets</sprite>
+      <sprite>sprites\s_giblets_bloody</sprite>
       <sprite>sprites\s_blood_spew</sprite>
       <sprite>sprites\s_blood_smear_ne</sprite>
       <sprite>sprites\s_footprints_bloody</sprite>
@@ -136,17 +139,19 @@
       <script>scripts\blood_hit.gml</script>
       <script>scripts\blood_hit_screen.gml</script>
       <script>scripts\shake_screen.gml</script>
-      <script>scripts\draw_blood.gml</script>
-      <script>scripts\draw_annulus.gml</script>
-      <script>scripts\handle_human_leg_anim.gml</script>
-      <script>scripts\draw_footprints.gml</script>
+      <script>scripts\goresplode.gml</script>
     </scripts>
     <scripts name="Action Specific">
       <script>scripts\shoot.gml</script>
+      <script>scripts\get_skin_color.gml</script>
+      <script>scripts\handle_human_leg_anim.gml</script>
     </scripts>
     <scripts name="Drawing">
       <script>scripts\draw_circle_width.gml</script>
-      <script>scripts\get_skin_color.gml</script>
+      <script>scripts\draw_annulus.gml</script>
+      <script>scripts\draw_footprints.gml</script>
+      <script>scripts\draw_blood.gml</script>
+      <script>scripts\draw_healthring.gml</script>
     </scripts>
   </scripts>
   <shaders name="shaders">
@@ -172,6 +177,7 @@
     </objects>
     <objects name="Projectiles">
       <object>objects\o_bullet</object>
+      <object>objects\o_shot</object>
       <object>objects\o_bullet_trail_shadow</object>
       <object>objects\o_grenade</object>
     </objects>
@@ -193,6 +199,7 @@
       <object>objects\obj_controller_shockwave</object>
       <object>objects\obj_player_shockwave</object>
     </objects>
+    <object>objects\o_dropped_weapon</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>

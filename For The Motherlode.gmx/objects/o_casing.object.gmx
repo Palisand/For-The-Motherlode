@@ -27,7 +27,7 @@
             <kind>1</kind>
             <string>image_speed = 0;
 dist = random_range(5, 10);
-rotate_speed = 30;
+rotate_speed = random_range(20, 40);
 </string>
           </argument>
         </arguments>

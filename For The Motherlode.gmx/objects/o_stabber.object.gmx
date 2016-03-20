@@ -61,7 +61,6 @@ blood_emitter = instance_create(x, y, o_particle_emitter);
 
 // Other
 proj_pushback = 0;
-gib_threshold = 10;
 
 </string>
           </argument>
@@ -263,7 +262,8 @@ if (!has_stabbed &amp;&amp; collision_point(x_stab, y_stab, o_player, true, fals
 total_health = (hhealth / max_health) * 100;
 
 if (total_health &lt;= 0) {
-    // goresplosion() script
+    goresplode(proj_pushback);
+    /*
     var num_giblets = sprite_get_number(s_stab_gibs_1);
     var gib_sprite = s_stab_gibs_1;
     if (proj_pushback &gt;= gib_threshold) {
@@ -280,7 +280,7 @@ if (total_health &lt;= 0) {
             direction = image_angle - 180 + random_range(-45, 45);
             // Explode from center: (360 / num_giblets) * (i + 1);
         }
-    }
+    }*/
     audio_play_sound_at(snd_blood_splat, x, y, 0, 0, 0, 0, false, 1);
     audio_sound_pitch(snd_blood_splat, random_range(0.8, 1));
     blood_hit(x, y, 100, blood_emitter.p_emitter, blood_emitter.p_type);
@@ -418,17 +418,19 @@ if (!drawn_blood) {
             <kind>1</kind>
             <string>/// Health
 
+var color;
 draw_set_circle_precision(64);
 if (total_health &lt; 50) {
-    draw_set_colour(merge_colour(c_red, c_yellow, (total_health * 2) / 100));   
+    color = merge_colour(c_red, c_yellow, (total_health * 2) / 100);   
 }
 else {
-    draw_set_colour(merge_colour(c_yellow, global.c_healthy_green, ((total_health - 50) * 2) / 100));
+    color = merge_colour(c_yellow, global.c_healthy_green, ((total_health - 50) * 2) / 100);
 }
+draw_set_colour(color);
 draw_set_alpha(0.5);
 draw_circle(x, y, 20, 64);
 draw_set_alpha(1);
-draw_annulus(x, y, 19, 20, image_angle, image_angle - (360 * total_health)/100, 0);
+draw_annulus(x, y, 19, 20, image_angle, image_angle - (360 * total_health)/100, 8);
 
 /*
 draw_healthbar(

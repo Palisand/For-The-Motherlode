@@ -19,7 +19,10 @@ repeat (gun[GUN.proj_amount]) {
     )) {
         target = proj_target;
         source = other.id;
-        speed = gun[GUN.proj_speed]; // + random_range() for shotgun; acceleration for missiles
+        speed = gun[GUN.proj_speed]; // TODO: acceleration for missiles
+        if (gun[GUN.proj_amount] > 1) {
+            speed += random_range(-5, 5);
+        }
         direction = other.image_angle + random_range(-gun[GUN.spread]/2, gun[GUN.spread]/2);
         image_angle = direction;
         damage = gun[GUN.damage];
@@ -28,16 +31,21 @@ repeat (gun[GUN.proj_amount]) {
     }
 }
 
-// if has_casing? or just use ammo_type
-with (instance_create(
-    draw_x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]], image_angle),
-    draw_y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]], image_angle),
-    o_casing
-)) {
-    image_angle = other.image_angle;
-    direction = other.image_angle - 90 + random_range(-45, 45);
-    speed = random_range(3, 5);
-    image_index = 0; // use GUN.ammo_type
+// and if has_casing? or just use ammo_type
+if (++shot_count >= gun[GUN.casing_eject_delay]) {
+    shot_count = 0;
+    repeat(gun[GUN.casing_amount]) {
+        with (instance_create(
+            draw_x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]], image_angle),
+            draw_y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]], image_angle),
+            o_casing
+        )) {
+            image_angle = other.image_angle;
+            direction = other.image_angle - 90 + random_range(-45, 45);
+            speed = random_range(3, 5);
+            image_index = gun[GUN.ammo_type];
+        }
+    }
 }
 
 // muzzle flash types?
@@ -52,5 +60,5 @@ if (kickback < gun[GUN.kickback]) {
 }
 
 if (id == o_player.id) {
-    shake_screen(gun[GUN.proj_force], 10);
+    shake_screen(gun[GUN.kickback], 10);
 }

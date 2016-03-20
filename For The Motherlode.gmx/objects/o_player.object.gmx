@@ -36,6 +36,7 @@ hhealth = 9001;
 mass = 10;
 acceleration = 0.1;
 move_speed = 5;
+dodge_offset = 0;
 dodge_speed = 250;
 dodge_recharge = 120;
 can_dodge = true;
@@ -68,11 +69,13 @@ walk_wave_t = 0;
 drawn_footprint = false;
 
 // Gun
+shot_count = 0;
 gun_index = 0;
 gun_inventory = ds_list_create();
 ds_list_add(gun_inventory, ITEM.pistol);
 ds_list_add(gun_inventory, ITEM.revolver);
 ds_list_add(gun_inventory, ITEM.smg);
+ds_list_add(gun_inventory, ITEM.so_shotgun);
 gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 </string>
           </argument>
@@ -198,12 +201,12 @@ can_shoot = true;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Kickback
+            <string>/// Kickback &amp; Dodge
 
 sprite_set_offset(
     mask_index, 
     sprite_get_width(mask_index)/2 + kickback, 
-    sprite_get_height(mask_index)/2
+    sprite_get_height(mask_index)/2 + dodge_offset,
 );
 
 draw_x = x;
@@ -211,12 +214,21 @@ draw_y = y;
 
 draw_x += lengthdir_x(kickback, image_angle - 180);
 draw_y += lengthdir_y(kickback, image_angle - 180);
+draw_x += lengthdir_x(dodge_offset, direction);
+draw_y += lengthdir_y(dodge_offset, direction);
 
 if (kickback &gt; 0) {
     kickback--;
 }
 else {
     kickback = 0;
+}
+
+if (dodge_offset &gt; 0) {
+    dodge_offset--;
+}
+else {
+    dodge_offset = 0;
 }
 </string>
           </argument>
@@ -323,6 +335,7 @@ else {
 // Dodge Reset
 if (keyboard_check_pressed(key_dodge) &amp;&amp; can_dodge &amp;&amp; moving) {
     can_dodge = false;
+    dodge_offset = 30;
     alarm[2] = dodge_recharge;
 }
 
@@ -414,10 +427,12 @@ if (diff &lt; 0) {
             <string>/// Weapon Swap
 
 if (mouse_wheel_up() &amp;&amp; gun_index &lt; ds_list_size(gun_inventory) - 1) {
+    shot_count = 0;
     gun_index++;
     gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 }
 if (mouse_wheel_down() &amp;&amp; gun_index &gt; 0) {
+    shot_count = 0;
     gun_index--;
     gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 }

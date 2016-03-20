@@ -75,7 +75,7 @@ enum ITEM {
     smg,
     lmg,
     pump_shotgun,
-    s_o_shotgun,
+    so_shotgun,
     auto_shotgun,
     rifle,  // single shot
     battle_rifle,  // semi-auto
@@ -134,6 +134,8 @@ enum GUN {
     proj_force,
     proj_type,
     ammo_type,  // determines casing
+    casing_amount,
+    casing_eject_delay,
     shoot_delay,
     sprite_frame_index,
     muzzle_offset,  // pixel distance from sprite center to weapon muzzle
@@ -199,9 +201,11 @@ arr_pistol[GUN.spread] = 3;
 arr_pistol[GUN.kickback] = 5;
 arr_pistol[GUN.proj_speed] = 80;
 arr_pistol[GUN.proj_amount] = 1;
-arr_pistol[GUN.proj_force] = 5;
+arr_pistol[GUN.proj_force] = 7;
 arr_pistol[GUN.proj_type] = o_bullet;
 arr_pistol[GUN.ammo_type] = GUN_AMMO.small_round;
+arr_pistol[GUN.casing_amount] = 1;
+arr_pistol[GUN.casing_eject_delay] = 0;
 arr_pistol[GUN.shoot_delay] = 0;
 arr_pistol[GUN.sprite_frame_index] = 0;
 arr_pistol[GUN.muzzle_offset] = 8;
@@ -212,7 +216,7 @@ global.items[ITEM.pistol] = arr_pistol;
 arr_revolver[ITEM_ATTR.type] = ITEM_TYPE.gun;
 arr_revolver[GUN.name] = "Revolver";
 arr_revolver[GUN.description] = "Like them cowboys had."
-arr_revolver[GUN.action] = GUN_ACTION.single_shot;  // just for testing (should be semi-auto, with 0 shoot_delay)
+arr_revolver[GUN.action] = GUN_ACTION.semi_auto;
 arr_revolver[GUN.carry] = GUN_CARRY.single;
 arr_revolver[GUN.damage] = 12;
 arr_revolver[GUN.range] = 1000;
@@ -223,7 +227,9 @@ arr_revolver[GUN.proj_amount] = 1;
 arr_revolver[GUN.proj_force] = 10;
 arr_revolver[GUN.proj_type] = o_bullet;
 arr_revolver[GUN.ammo_type] = GUN_AMMO.small_round;
-arr_revolver[GUN.shoot_delay] = 60;
+arr_revolver[GUN.casing_amount] = 6;
+arr_revolver[GUN.casing_eject_delay] = 6;
+arr_revolver[GUN.shoot_delay] = 0;
 arr_revolver[GUN.sprite_frame_index] = 1;
 arr_revolver[GUN.muzzle_offset] = 10;
 arr_revolver[GUN.sound_fire] = snd_pistol_fire;
@@ -241,15 +247,40 @@ arr_smg[GUN.spread] = 10;
 arr_smg[GUN.kickback] = 5;
 arr_smg[GUN.proj_speed] = 80;
 arr_smg[GUN.proj_amount] = 1;
-arr_smg[GUN.proj_force] = 5;
+arr_smg[GUN.proj_force] = 7;
 arr_smg[GUN.proj_type] = o_bullet;
 arr_smg[GUN.ammo_type] = GUN_AMMO.small_round;
+arr_smg[GUN.casing_amount] = 1;
+arr_smg[GUN.casing_eject_delay] = 0;
 arr_smg[GUN.shoot_delay] = 5;
 arr_smg[GUN.sprite_frame_index] = 2;
 arr_smg[GUN.muzzle_offset] = 12;
 arr_smg[GUN.sound_fire] = snd_pistol_fire;
 //arr_smg[GUN.sound_equip] = 
 global.items[ITEM.smg] = arr_smg;
+// SO_Shotgun
+arr_so_shotgun[ITEM_ATTR.type] = ITEM_TYPE.gun;
+arr_so_shotgun[GUN.name] = "Sawed-Off Shotgun";
+arr_so_shotgun[GUN.description] = "Implicitly double-barrel."
+arr_so_shotgun[GUN.action] = GUN_ACTION.single_shot;
+arr_so_shotgun[GUN.carry] = GUN_CARRY.single;
+arr_so_shotgun[GUN.damage] = 4;
+arr_so_shotgun[GUN.range] = 200;
+arr_so_shotgun[GUN.spread] = 20;
+arr_so_shotgun[GUN.kickback] = 20;
+arr_so_shotgun[GUN.proj_speed] = 80;
+arr_so_shotgun[GUN.proj_amount] = 12;
+arr_so_shotgun[GUN.proj_force] = 7;
+arr_so_shotgun[GUN.proj_type] = o_shot;
+arr_so_shotgun[GUN.ammo_type] = GUN_AMMO.shell;
+arr_so_shotgun[GUN.casing_amount] = 2;
+arr_so_shotgun[GUN.casing_eject_delay] = 2;
+arr_so_shotgun[GUN.shoot_delay] = 40;
+arr_so_shotgun[GUN.sprite_frame_index] = 3;
+arr_so_shotgun[GUN.muzzle_offset] = 12;
+arr_so_shotgun[GUN.sound_fire] = snd_pistol_fire;
+//arr_so_shotgun[GUN.sound_equip] = 
+global.items[ITEM.so_shotgun] = arr_so_shotgun;
 </string>
           </argument>
         </arguments>
