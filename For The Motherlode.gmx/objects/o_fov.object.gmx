@@ -60,12 +60,22 @@ draw_set_blend_mode(bm_subtract);
 draw_annulus(
     global.surf_offset + o_player.x - lengthdir_x(radius, o_player.image_angle), 
     global.surf_offset + o_player.y - lengthdir_y(radius, o_player.image_angle), 
-    0, room_width, o_player.image_angle - range, o_player.image_angle + range, 0
+    0, room_width, o_player.image_angle - range, o_player.image_angle + range, 2
 );
 draw_circle(global.surf_offset + o_player.x, global.surf_offset + o_player.y, radius * 2, false);
 draw_set_alpha(1);
 draw_set_blend_mode(bm_normal);
 surface_reset_target();
+
+/*
+surface_set_target(fov_limit);
+draw_clear_alpha(c_black, 1);
+draw_set_blend_mode(bm_subtract);
+draw_circle(global.surf_offset + view_xview + view_wview/2, global.surf_offset + view_yview + view_hview/2, view_wview/2, false);
+draw_set_alpha(1);
+draw_set_blend_mode(bm_normal);
+surface_reset_target();
+*/
 
 if (surface_exists(fov)) {
     draw_surface(fov, -global.surf_offset, -global.surf_offset);

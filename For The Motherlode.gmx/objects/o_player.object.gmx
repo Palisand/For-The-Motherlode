@@ -69,7 +69,7 @@ walk_wave_t = 0;
 drawn_footprint = false;
 
 // Gun
-shot_count = 0;
+current_spread = 0;
 gun_index = 0;
 gun_inventory = ds_list_create();
 ds_list_add(gun_inventory, ITEM.pistol);
@@ -201,6 +201,45 @@ can_shoot = true;
         <arguments>
           <argument>
             <kind>1</kind>
+            <string>/// Barrier &amp; Motherlode Collision
+
+// Barrier
+var dist = point_distance(x, y, o_motherlode.x, o_motherlode.y);
+var dir = point_direction(x, y, o_motherlode.x, o_motherlode.y);
+var diff = dist - global.barrier_radius;
+
+if (diff &gt; 0) {
+    x += lengthdir_x(diff, dir);
+    y += lengthdir_y(diff, dir);
+}
+
+// Motherlode
+diff = dist - o_motherlode.radius;
+
+if (diff &lt; 0) {
+    x += lengthdir_x(diff, dir);
+    y += lengthdir_y(diff, dir);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
             <string>/// Kickback &amp; Dodge
 
 sprite_set_offset(
@@ -273,6 +312,29 @@ switch (gun_current[GUN.action]) {
         }
         break;
 }
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Spread
+
+current_spread = lerp(current_spread, 0, 0.05);
 </string>
           </argument>
         </arguments>
@@ -385,54 +447,13 @@ handle_human_leg_anim(moving);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Barrier &amp; Motherlode Collision
-
-// Barrier
-var dist = point_distance(x, y, o_motherlode.x, o_motherlode.y);
-var dir = point_direction(x, y, o_motherlode.x, o_motherlode.y);
-var diff = dist - global.barrier_radius;
-
-if (diff &gt; 0) {
-    x += lengthdir_x(diff, dir);
-    y += lengthdir_y(diff, dir);
-}
-
-// Motherlode
-diff = dist - o_motherlode.radius;
-
-if (diff &lt; 0) {
-    x += lengthdir_x(diff, dir);
-    y += lengthdir_y(diff, dir);
-}
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
             <string>/// Weapon Swap
 
 if (mouse_wheel_up() &amp;&amp; gun_index &lt; ds_list_size(gun_inventory) - 1) {
-    shot_count = 0;
     gun_index++;
     gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 }
 if (mouse_wheel_down() &amp;&amp; gun_index &gt; 0) {
-    shot_count = 0;
     gun_index--;
     gun_current = global.items[ds_list_find_value(gun_inventory, gun_index)];
 }
@@ -529,6 +550,13 @@ draw_sprite_shadow_ext(
 );
 // Torso (sprite)
 draw_sprite_ext(s_torso_current, gun_current[GUN.carry], draw_x, draw_y, 1, 1, image_angle, c_skin, 1);
+// Weapon (sprite)
+draw_sprite_ext(
+    s_guns, gun_current[GUN.sprite_frame_index], 
+    draw_x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
+    draw_y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
+    1, 1, image_angle, c_white, 1,
+);
 // Head
 draw_sprite_shadow_ext(
     s_plr_head, 0, draw_x, draw_y, image_angle,
@@ -537,13 +565,7 @@ draw_sprite_shadow_ext(
 draw_sprite_ext(s_plr_head, 0, draw_x, draw_y, 1, 1, image_angle, c_skin, 1);
 // Eyes
 draw_sprite_ext(s_plr_head, 1, draw_x, draw_y, 1, 1, image_angle, c_white, 1);
-// Weapon (sprite)
-draw_sprite_ext(
-    s_guns, gun_current[GUN.sprite_frame_index], 
-    draw_x + lengthdir_x(global.gun_carry_offset[gun_current[GUN.carry]], image_angle), 
-    draw_y + lengthdir_y(global.gun_carry_offset[gun_current[GUN.carry]], image_angle),
-    1, 1, image_angle, c_white, 1,
-);
+
 
 // Footprints
 draw_footprints();
@@ -567,29 +589,84 @@ draw_footprints();
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// "Line" Of Sight
+            <string>/// Sights Guide Lines
 
-var max_len = 300;
-var min_len = 100;
-var len = point_distance(x, y, o_crosshair.x, o_crosshair.y) * max_len / (room_width/4);
-if (len &lt; min_len) {
-    len = min_len;
+var min_len = 50;
+var max_len = room_width;
+var len_to_cursor = point_distance(x, y, o_crosshair.x, o_crosshair.y);
+var spread_offset;
+if (gun_current[GUN.proj_amount] &gt; 1) {
+    spread_offset = gun_current[GUN.spread];
 }
-if (len &gt; max_len) {
-    len = max_len;
+else {
+    spread_offset = current_spread;
 }
+spread_offset /= 2;
+var aim_dir_right = image_angle - spread_offset;
+var aim_dir_left = image_angle + spread_offset;
 
 draw_set_colour(c_white);
-draw_set_alpha(0.3);
+draw_set_alpha(0.05);
+// base guide lines
 draw_line_width(
-    x + lengthdir_x(50, image_angle),
-    y + lengthdir_y(50, image_angle),
-    x + lengthdir_x(len, image_angle), 
-    y + lengthdir_y(len, image_angle),
+    x + lengthdir_x(min_len, aim_dir_right),
+    y + lengthdir_y(min_len, aim_dir_right),
+    x + lengthdir_x(max_len, aim_dir_right), 
+    y + lengthdir_y(max_len, aim_dir_right),
     2
 );
-draw_set_alpha(1);
+draw_line_width(
+    x + lengthdir_x(min_len, aim_dir_left),
+    y + lengthdir_y(min_len, aim_dir_left),
+    x + lengthdir_x(max_len, aim_dir_left), 
+    y + lengthdir_y(max_len, aim_dir_left),
+    2
+);
 
+if (len_to_cursor &gt; min_len) {
+    draw_set_alpha(0.1);
+    if (gun_current[GUN.action] == GUN_ACTION.single_shot) {
+        var ratio = (alarm[0] + 1) / gun_current[GUN.shoot_delay];// better variable name!
+        draw_line_width(
+            x + lengthdir_x(min_len, aim_dir_right),
+            y + lengthdir_y(min_len, aim_dir_right),
+            x + lengthdir_x(len_to_cursor - (len_to_cursor * ratio), aim_dir_right), 
+            y + lengthdir_y(len_to_cursor - (len_to_cursor * ratio), aim_dir_right),
+            2
+        );
+        draw_line_width(
+            x + lengthdir_x(min_len, aim_dir_left),
+            y + lengthdir_y(min_len, aim_dir_left),
+            x + lengthdir_x(len_to_cursor - (len_to_cursor * ratio), aim_dir_left), 
+            y + lengthdir_y(len_to_cursor - (len_to_cursor * ratio), aim_dir_left),
+            2
+        );
+        if (alarm[0] != -1) {
+            draw_set_alpha(0.2);
+            draw_circle(x + lengthdir_x(len_to_cursor, aim_dir_right), y + lengthdir_y(len_to_cursor, aim_dir_right), 2, false);
+            draw_circle(x + lengthdir_x(len_to_cursor, aim_dir_left), y + lengthdir_y(len_to_cursor, aim_dir_left), 2, false);
+            draw_set_alpha(0.1);
+        }
+    }
+    else {
+        draw_line_width(
+            x + lengthdir_x(min_len, aim_dir_right),
+            y + lengthdir_y(min_len, aim_dir_right),
+            x + lengthdir_x(len_to_cursor, aim_dir_right), 
+            y + lengthdir_y(len_to_cursor, aim_dir_right),
+            2
+        );
+        draw_line_width(
+            x + lengthdir_x(min_len, aim_dir_left),
+            y + lengthdir_y(min_len, aim_dir_left),
+            x + lengthdir_x(len_to_cursor, aim_dir_left), 
+            y + lengthdir_y(len_to_cursor, aim_dir_left),
+            2
+        );
+    }
+}
+
+draw_set_alpha(1);
 </string>
           </argument>
         </arguments>

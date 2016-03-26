@@ -25,7 +25,8 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>var offset = 0;
+            <string>/*
+var offset = 0;
 
 if (window_get_fullscreen()) {
     offset = display_get_gui_height() - view_hview;
@@ -67,7 +68,7 @@ draw_set_alpha(1);
 draw_set_color(c_gray);
 var angle_start = image_angle - 180;
 var ratio = (alarm[2] + 1) / dodge_recharge;
-draw_annulus(x, y, 50, 52, angle_start + 45 * ratio, angle_start - 45 * ratio, 0);
+draw_annulus(x, y, 50, 52, angle_start + 45 * ratio, angle_start - 45 * ratio, 2);
 </string>
           </argument>
         </arguments>

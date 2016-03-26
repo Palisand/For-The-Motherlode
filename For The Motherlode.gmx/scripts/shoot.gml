@@ -20,10 +20,16 @@ repeat (gun[GUN.proj_amount]) {
         target = proj_target;
         source = other.id;
         speed = gun[GUN.proj_speed]; // TODO: acceleration for missiles
+        var spread_offset;
         if (gun[GUN.proj_amount] > 1) {
             speed += random_range(-5, 5);
+            spread_offset = gun[GUN.spread];
         }
-        direction = other.image_angle + random_range(-gun[GUN.spread]/2, gun[GUN.spread]/2);
+        else {
+            spread_offset = other.current_spread;
+        }
+        spread_offset /= 2;
+        direction = other.image_angle + random_range(-spread_offset, spread_offset);
         image_angle = direction;
         damage = gun[GUN.damage];
         // crit_chance = gun[GUN.crit_chance];
@@ -32,20 +38,15 @@ repeat (gun[GUN.proj_amount]) {
 }
 
 // and if has_casing? or just use ammo_type
-if (++shot_count >= gun[GUN.casing_eject_delay]) {
-    shot_count = 0;
-    repeat(gun[GUN.casing_amount]) {
-        with (instance_create(
-            draw_x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]], image_angle),
-            draw_y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]], image_angle),
-            o_casing
-        )) {
-            image_angle = other.image_angle;
-            direction = other.image_angle - 90 + random_range(-45, 45);
-            speed = random_range(3, 5);
-            image_index = gun[GUN.ammo_type];
-        }
-    }
+with (instance_create(
+    draw_x + lengthdir_x(global.gun_carry_offset[gun[GUN.carry]], image_angle),
+    draw_y + lengthdir_y(global.gun_carry_offset[gun[GUN.carry]], image_angle),
+    o_casing
+)) {
+    image_angle = other.image_angle;
+    direction = other.image_angle - 90 + random_range(-45, 45);
+    speed = random_range(3, 5);
+    image_index = gun[GUN.ammo_type];
 }
 
 // muzzle flash types?
@@ -61,4 +62,9 @@ if (kickback < gun[GUN.kickback]) {
 
 if (id == o_player.id) {
     shake_screen(gun[GUN.kickback], 10);
+}
+
+// handle spread due to recoil
+if (current_spread < gun[GUN.spread]) {
+    current_spread += gun[GUN.kickback]/2;
 }

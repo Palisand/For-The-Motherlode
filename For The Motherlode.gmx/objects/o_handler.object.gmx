@@ -27,6 +27,8 @@
             <kind>1</kind>
             <string>randomize();
 
+drawn_barrier = false;
+
 instance_create(0, 0, o_globals);
 instance_create(0, 0, o_player);
 instance_create(0, 0, o_hud);
@@ -34,6 +36,27 @@ instance_create(mouse_x, mouse_y, o_crosshair);
 instance_create(0, 0, o_camera);
 instance_create(0, 0, o_fov);
 instance_create(room_width/2, room_height/2, o_motherlode);
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Enemy Spawn
 
 var dist = room_width/2 + (cos(degtorad(45)) * (room_width/2));
 repeat(10) {
@@ -43,7 +66,8 @@ repeat(10) {
         room_height/2 + lengthdir_y(dist, dir), 
         o_stabber
     );
-}/*
+}
+/*
 repeat(5) {
     var dir = random(360);
     instance_create(
@@ -53,8 +77,27 @@ repeat(5) {
     );
 }
 
-
-// Terrain
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Terrain (Not Used)
 /*
 var edge_buffer = 50; // will probably need this for global.surf too
 
@@ -211,7 +254,7 @@ draw_text(0, 40, "Instance Count: " + string(instance_count));
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Noise
+            <string>/// Noise (Not Used)
 /*
 draw_text(0, 20, "octaves: " + string(octaves));
 draw_text(0, 40, "scale: " + string(scale));
@@ -222,32 +265,6 @@ draw_text(0, 60, "persistence: " + string(persistence));
       </action>
     </event>
     <event eventtype="8" enumb="0">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/// Terrain
-/*
-var c_terrain_beige = make_colour_hsv(30, 150, 200);
-var c_terrain_brown = make_colour_hsv(20, 150, 200);
-draw_sprite_ext(s_terrain_1, 0, 0, 0, 1, 1, 0, c_terrain_beige, 1);
-draw_sprite_ext(s_terrain_2, 0, 0, 0, 1, 1, 0, c_terrain_brown, 1);
-</string>
-          </argument>
-        </arguments>
-      </action>
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -287,20 +304,43 @@ draw_surface(global.surf, -global.surf_offset, -global.surf_offset);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/// Grid &amp; Barrier
+            <string>/// Barrier
 
-draw_set_circle_precision(64);
-draw_set_colour(c_black);
-draw_set_alpha(0.1);
-draw_circle_width(room_width/2, room_height/2, global.barrier_radius, 10, 128);
-draw_set_alpha(1);
-
-/*
-for (var i = 0; i &lt; room_width; i += room_width / 5) {
-    draw_line(i, 0, i, room_height);
-    draw_line(0, i, room_width, i);
+if (!drawn_barrier) {
+    drawn_barrier = true;
+    surface_set_target(global.surf);
+    draw_set_colour(c_black);
+    draw_set_alpha(0.2);
+    draw_circle_width(global.surf_offset + room_width/2, global.surf_offset + room_height/2, global.barrier_radius, 10, 128);
+    draw_set_alpha(1);
+    surface_reset_target();
 }
-
+</string>
+          </argument>
+        </arguments>
+      </action>
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/// Terrain (Not Used)
+/*
+var c_terrain_beige = make_colour_hsv(30, 150, 200);
+var c_terrain_brown = make_colour_hsv(20, 150, 200);
+draw_sprite_ext(s_terrain_1, 0, 0, 0, 1, 1, 0, c_terrain_beige, 1);
+draw_sprite_ext(s_terrain_2, 0, 0, 0, 1, 1, 0, c_terrain_brown, 1);
 </string>
           </argument>
         </arguments>

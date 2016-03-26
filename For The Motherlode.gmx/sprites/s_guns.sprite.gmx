@@ -35,5 +35,7 @@
     <frame index="12">images\s_guns_12.png</frame>
     <frame index="13">images\s_guns_13.png</frame>
     <frame index="14">images\s_guns_14.png</frame>
+    <frame index="15">images\s_guns_15.png</frame>
+    <frame index="16">images\s_guns_16.png</frame>
   </frames>
 </sprite>

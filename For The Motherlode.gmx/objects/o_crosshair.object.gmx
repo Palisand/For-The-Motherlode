@@ -32,7 +32,7 @@ y = mouse_y;
         </arguments>
       </action>
     </event>
-    <event eventtype="3" enumb="0">
+    <event eventtype="3" enumb="1">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -73,11 +73,13 @@ y = mouse_y;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>draw_set_circle_precision(64);
+            <string>// Drawing should only happen when using projectiles that will "hit the ground"
+/*
+draw_set_circle_precision(64);
 draw_set_colour(c_white);
 draw_circle(x, y, 2, false);
-//draw_circle(o_player.x, o_player.y, distance_to_point(o_player.x, o_player.y), true);
-
+draw_circle(o_player.x, o_player.y, distance_to_point(o_player.x, o_player.y), true);
+/*
 if (o_player.gun_current[GUN.action] == GUN_ACTION.single_shot) {
     draw_annulus(
         x, y, 6, 8, o_player.image_angle, 

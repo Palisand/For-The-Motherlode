@@ -79,8 +79,8 @@ shaking = false;
             <kind>1</kind>
             <string>/// Zoom
 if (mouse_check_button(mb_right)) {
-    view_wview = 768;
-    view_hview = 768;
+    view_wview = 512;//768;
+    view_hview = 512;//768;
 }
 else {
     view_wview = 1536;

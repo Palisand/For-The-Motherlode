@@ -75,7 +75,7 @@ for (var i = 0; i &lt; amt; i++) {
 
 draw_set_alpha(0.05);
 draw_set_colour(c_black);
-draw_circle_width(x, y, radius, 3, 64);
+draw_circle_width(x, y, radius, 3, 32);
 draw_set_alpha(1);
 
 </string>
